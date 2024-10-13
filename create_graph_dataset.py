@@ -3,9 +3,9 @@ import math
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-
-print("*"*6,"Loading Data", "*"*6)
-df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+import torch
+from torch_geometric.utils.convert import from_networkx
+from egnn.dataset import EGNNDataset 
 
 def posM(nb):
   match nb:
@@ -35,9 +35,9 @@ def graph_from_line(l, G=None, colors=[]):
     col = l[f"Color Metal{i}"].lower()
     colors.append(col if col != "v" else "g")
   for i in range(9,21):
-    G.add_node(f"{ng}_F{i}", atom="F", dE_scaled=l["dE scaled"])
+    G.add_node(f"{ng}_F{i}", color="G", atom=9, dE_scaled=l["dE scaled"])
     colors.append("lightgrey")
-  G.add_node(f"{ng}_K", atom="K", dE_scaled=l["dE scaled"])
+  G.add_node(f"{ng}_K", color="G", atom=19, dE_scaled=l["dE scaled"])
   colors.append("lightgrey")
   # Each M has a shift wrt a F atom which is a factor of a b or c depending on the direction
   G.add_edge(f"{ng}_M1", f"{ng}_F9" , distance=np.round(distMK(1,0.25+l["M1 shift xF9" ]*0.0001,0,0,l["a"],l["b"],l["c"]),3))
@@ -103,15 +103,25 @@ def displayLargeGraph(G, colors):
     plt.figure(figsize=(10,10))
     # should create positions myppself...
     nx.draw(G, with_labels=True, node_size=1000, node_color=colors)
-    edge_labels = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=nx.get_edge_attributes(G, "distance"))
-    node_labels = nx.draw_networkx_labels(G, pos=pos)#, labels=nx.get_node_attributes(G, "atom"))
+    # edge_labels = nx.draw_networkx_edge_labels(G, edge_labels=nx.get_edge_attributes(G, "distance"))
+    # node_labels = nx.draw_networkx_labels(G)#, labels=nx.get_node_attributes(G, "atom"))
     plt.show()
 
-G = nx.Graph()
-colors=[]
-for l in df.iloc:
-    print("   ","*"*6,"convertir ligne", l.name)
-    G,colors = graph_from_line(l, G=G, colors=colors)
-displayLargeGraph(G, colors)
+if __name__ == "__main__":
+    print("*"*6,"loading Data", "*"*6)
+    df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+    print("*"*6,"converting to graphs", "*"*6)
+    train_df = df.sample(int(len(df)*0.8), random_state=42)
+    test_df = df.drop(train_df.index)
+    train_list = []
+    for l in train_df.iloc: train_list.append(graph_from_line(l)[0])
+    test_list = []
+    for l in test_df.iloc: test_list.append(graph_from_line(l)[0])
+    print("*"*6,"saving", "*"*6)
+    train = EGNNDataset(train_list)
+    test = EGNNDataset(test_list)
+    torch.save(train, "data/train.pt")
+    torch.save(test, "data/test.pt")
+
     
 

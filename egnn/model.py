@@ -1,0 +1,3 @@
+# for the model...
+# is https://colab.research.google.com/drive/1I8a0DfQ3fI7Njc62__mVXUlcAleUclnb?usp=sharing#scrollTo=_5FBQ9gXpL-W 
+# a good example?

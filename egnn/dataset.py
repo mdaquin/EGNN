@@ -1,4 +1,4 @@
-from torch.utils.data.dataset import Dataset
+from torch_geometric.data import Dataset
 
 class EGNNDataset(Dataset):
     def __init__(self, list_graphs): self.list_graphs = list_graphs

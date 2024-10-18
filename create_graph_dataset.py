@@ -31,13 +31,14 @@ def graph_from_line(l, G=None, colors=[]):
   if G is None: G=nx.Graph(dE_scaled=l["dE scaled"])
   # 8 metal nodes, each with a color and an atom (Z)
   for i in range(1, 9):
-    G.add_node(f"{ng}_M{i}", color=l[f"Color Metal{i}"], atom=l["Z"], dE_scaled=l["dE scaled"])
     col = l[f"Color Metal{i}"].lower()
+    colR, colG, colB = 1 if col=="r" else 0, 1 if col=="v" else 0, 1 if col=="b" else 0
+    G.add_node(f"{ng}_M{i}", colR=colR, colG=colG, colB=colB, atom=l["Z"]) #, dE_scaled=l["dE scaled"])
     colors.append(col if col != "v" else "g")
   for i in range(9,21):
-    G.add_node(f"{ng}_F{i}", color="G", atom=9, dE_scaled=l["dE scaled"])
+    G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9) #, dE_scaled=l["dE scaled"])
     colors.append("lightgrey")
-  G.add_node(f"{ng}_K", color="G", atom=19, dE_scaled=l["dE scaled"])
+  G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19) #, dE_scaled=l["dE scaled"])
   colors.append("lightgrey")
   # Each M has a shift wrt a F atom which is a factor of a b or c depending on the direction
   G.add_edge(f"{ng}_M1", f"{ng}_F9" , distance=np.round(distMK(1,0.25+l["M1 shift xF9" ]*0.0001,0,0,l["a"],l["b"],l["c"]),3))
@@ -114,9 +115,9 @@ if __name__ == "__main__":
     train_df = df.sample(int(len(df)*0.8), random_state=42)
     test_df = df.drop(train_df.index)
     train_list = []
-    for l in train_df.iloc: train_list.append(graph_from_line(l)[0])
+    for l in train_df.iloc: train_list.append(from_networkx(graph_from_line(l)[0]))
     test_list = []
-    for l in test_df.iloc: test_list.append(graph_from_line(l)[0])
+    for l in test_df.iloc: test_list.append(from_networkx(graph_from_line(l)[0]))
     print("*"*6,"saving", "*"*6)
     train = EGNNDataset(train_list)
     test = EGNNDataset(test_list)

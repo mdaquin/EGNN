@@ -114,6 +114,9 @@ if __name__ == "__main__":
     print("*"*6,"converting to graphs", "*"*6)
     train_df = df.sample(int(len(df)*0.8), random_state=42)
     test_df = df.drop(train_df.index)
+    # normalise output 
+    train_df["dE scaled"] = (train_df["dE scaled"] - train_df["dE scaled"].mean()) / train_df["dE scaled"].std()
+    test_df["dE scaled"] = (test_df["dE scaled"] - train_df["dE scaled"].mean()) / train_df["dE scaled"].std()
     train_list = []
     for l in train_df.iloc: train_list.append(from_networkx(graph_from_line(l)[0]))
     test_list = []

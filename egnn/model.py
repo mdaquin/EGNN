@@ -1,4 +1,4 @@
-from torch.nn import Linear
+from torch.nn import Linear, Module
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 from torch_geometric.nn import global_mean_pool
@@ -6,7 +6,7 @@ from torch_geometric.nn import global_mean_pool
 # TODO: make it so that the node features are 1 vector
 # TODO: figure out how to decide on nb channels
 # TODO: normalise node features?
-class EGNN(torch.nn.Module):
+class EGNN(Module):
     def __init__(self):
         super(EGNN, self).__init__()
         self.conv1 = GCNConv(4, 64) # 4 because of the 4 node features 

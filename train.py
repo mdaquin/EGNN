@@ -1,8 +1,7 @@
-import torch
 from egnn.dataset import EGNNDataset
 from egnn.model import EGNN
 from torch_geometric.loader import DataLoader # type: ignore
-
+import torch
 
 train_dataset = torch.load("data/train.pt", weights_only=False)
 test_dataset = torch.load("data/test.pt", weights_only=False)
@@ -26,4 +25,3 @@ print(model)
 
 for step, data in enumerate(train_loader):
     print(f"Step {step}: {data.num_graphs} graphs")
-P

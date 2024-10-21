@@ -52,14 +52,14 @@ class EGNN(Module):
         x = (res+x).relu()
 
         x = global_mean_pool(x, batch) 
-        # res = x
-        # x = self.lin1(x)
-        # x = torch.nn.RReLU()(res+x) # added
-        #res = x
-        #x = self.lin2(x)
-        #x = torch.nn.RReLU()(res+x) # added
-        # x = F.dropout(x, p=0.5, training=self.training)
+        res = x
+        x = self.lin1(x)
+        x = torch.nn.RReLU()(res+x) # added
+        res = x
+        x = self.lin2(x)
+        x = torch.nn.RReLU()(res+x) # added
+        x = F.dropout(x, p=0.5, training=self.training)
         res = x
         x = self.lin3(x)
-        # x = torch.nn.RReLU()(x) # added
+        x = torch.nn.RReLU()(x) # added
         return x

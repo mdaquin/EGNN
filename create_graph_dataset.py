@@ -113,7 +113,7 @@ if __name__ == "__main__":
     df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
     print("*"*6,"converting to graphs", "*"*6)
     # normalise output 
-    df["dE scaled"] = ((df["dE scaled"] - df["dE scaled"].min()) / (df["dE scaled"].max()-df["dE scaled"].min())) + 0.1
+    df["dE scaled"] = ((df["dE scaled"] - df["dE scaled"].min()) / (df["dE scaled"].max()-df["dE scaled"].min()))
     train_df = df.sample(int(len(df)*0.8), random_state=42)
     test_df = df.drop(train_df.index)
     train_list = []

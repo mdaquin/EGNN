@@ -93,7 +93,6 @@ def displayGraph(G, ng, colors):
            f"{ng}_F18": (0.5, -0.25), f"{ng}_F19": (-0.25, 0.5), f"{ng}_F20": (0.75, 0.75),
            f"{ng}_K": (0,0)}
     plt.figure(figsize=(8,8))
-    # should create positions myself...
     nx.draw(G, with_labels=True, node_size=1000, node_color=colors, pos=pos)
     edge_labels = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=nx.get_edge_attributes(G, "distance"))
     node_labels = nx.draw_networkx_labels(G, pos=pos)#, labels=nx.get_node_attributes(G, "atom"))
@@ -102,7 +101,7 @@ def displayGraph(G, ng, colors):
 
 def displayLargeGraph(G, colors):
     plt.figure(figsize=(10,10))
-    # should create positions myppself...
+    # should create positions myself...
     nx.draw(G, with_labels=True, node_size=1000, node_color=colors)
     # edge_labels = nx.draw_networkx_edge_labels(G, edge_labels=nx.get_edge_attributes(G, "distance"))
     # node_labels = nx.draw_networkx_labels(G)#, labels=nx.get_node_attributes(G, "atom"))

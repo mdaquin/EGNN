@@ -112,12 +112,14 @@ if __name__ == "__main__":
     print("*"*6,"loading Data", "*"*6)
     df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
     print("*"*6,"converting to graphs", "*"*6)
-    # normalise output 
+    # normalise output
+    # test standardisation ? 
     df["dE scaled"] = ((df["dE scaled"] - df["dE scaled"].min()) / (df["dE scaled"].max()-df["dE scaled"].min()))
     train_df = df.sample(int(len(df)*0.8), random_state=42)
     test_df = df.drop(train_df.index)
     train_list = []
     for l in train_df.iloc: train_list.append(from_networkx(graph_from_line(l)[0]))
+    # normalise... 
     test_list = []
     for l in test_df.iloc: test_list.append(from_networkx(graph_from_line(l)[0]))
     print("*"*6,"saving", "*"*6)

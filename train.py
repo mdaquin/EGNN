@@ -66,7 +66,9 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
 train_dataset = torch.load("data/train.pt", weights_only=False)
+min, max = train_dataset.normalise()
 test_dataset = torch.load("data/test.pt", weights_only=False)
+test_dataset.normalise(min, max)
 
 print(f'Number of train graphs: {len(train_dataset)}')
 print(f'First graph:{train_dataset[0]}')

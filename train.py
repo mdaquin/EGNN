@@ -16,7 +16,10 @@ def train():
         cG = data.colR.view(data.colG.size(0), -1)
         cB = data.colR.view(data.colB.size(0), -1)
         a = data.atom.view(data.atom.size(0), -1)
-        x = torch.hstack((cR,cG,cB,a)).to(torch.float32)
+        f = data.fluoride.view(data.fluoride.size(0), -1)
+        m = data.metal.view(data.metal.size(0), -1)
+        k = data.potassium.view(data.potassium.size(0), -1)
+        x = torch.hstack((cR,cG,cB,a,m,f,k)).to(torch.float32)
         x = x.to(device)
         out = model(x, data.edge_index, data.batch, data.distance.to(torch.float).view(len(1-data.distance), -1))  # Perform a single forward pass.
         out[out == float("Inf")] = 0    
@@ -37,7 +40,10 @@ def test(model, loader, show=False):
          cG = data.colR.view(data.colG.size(0), -1)
          cB = data.colR.view(data.colB.size(0), -1)
          a = data.atom.view(data.atom.size(0), -1)
-         x = torch.hstack((cR,cG,cB,a)).to(torch.float32)
+         f = data.fluoride.view(data.fluoride.size(0), -1)
+         m = data.metal.view(data.metal.size(0), -1)
+         k = data.potassium.view(data.potassium.size(0), -1)
+         x = torch.hstack((cR,cG,cB,a,m,f,k)).to(torch.float32)
          x=x.to(device)
          out = model(x, data.edge_index, data.batch, data.distance.to(torch.float).view(len(1-data.distance), -1)).detach()
          real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1).detach()

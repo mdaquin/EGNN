@@ -9,7 +9,7 @@ from torch_geometric.nn import global_mean_pool
 class EGNN(Module):
     def __init__(self, hidden_channels=16, K=3):
         super(EGNN, self).__init__()
-        self.conv1 = GCNConv(4, hidden_channels) 
+        self.conv1 = GCNConv(7, hidden_channels) 
         self.conv2 = GCNConv(hidden_channels, hidden_channels)  # TODO: check if edge features could be used... for distance
         self.conv3 = GCNConv(hidden_channels, hidden_channels)
         self.conv4 = GCNConv(hidden_channels, hidden_channels)

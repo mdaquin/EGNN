@@ -6,7 +6,6 @@ from torch_geometric.nn import global_mean_pool
 
 # TODO: make it so that the node features are 1 vector
 # TODO: figure out how to decide on nb channels
-# TODO: normalise node features?
 class EGNN(Module):
     def __init__(self, hidden_channels=16, K=3):
         super(EGNN, self).__init__()

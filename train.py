@@ -78,12 +78,12 @@ print(f'First graph:{test_dataset[0]}')
 # TODO: normalise distances... make no difference currently
 
 # TODO: batch size as option
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=200, shuffle=False)
-model = EGNN(hidden_channels=128, K=2).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01) # LR in params
-criterion = torch.nn.MSELoss() # TODO: in params
-# criterion = torch.nn.L1Loss() 
+model = EGNN(hidden_channels=64, K=2).to(device)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001) # LR in params
+# criterion = torch.nn.MSELoss() # TODO: in params
+criterion = torch.nn.L1Loss() 
 
 best_test = None
 best_epoch = None

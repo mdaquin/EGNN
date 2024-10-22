@@ -16,7 +16,6 @@ class EGNNDataset(Dataset):
                     if type(k[1]) == torch.Tensor and len(k[1].shape) == 1:
                         if k[0] not in min or k[1].min() < min[k[0]]: min[k[0]] = k[1].min()
                         if k[0] not in max or k[1].max() > max[k[0]]: max[k[0]] = k[1].max()
-                # TODO: atom is normalised in create_dataset based on 118. remove it.
         for g in self.list_graphs:
                 for k in g:
                      if k[0] in min and k[0] in max:

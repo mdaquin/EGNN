@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 import math
 import numpy as np
@@ -25,20 +26,23 @@ def distMK(nbm, kx, ky, kz, a, b, c):
     met = posM(nbm)
     return dist(met[0], met[1], met[2], kx, ky, kz, a, b, c)
 
+def distMM(nbm1, nbm2, a, b, c):
+    met1 = posM(nbm1)
+    met2 = posM(nbm2)
+    return dist(met1[0], met1[1], met1[2], met2[0], met2[1], met2[2], a, b, c)
+
 def graph_from_line(l, G=None, colors=[]):
   ng = l.name
-  # output var is dEscaled
   if G is None: G=nx.Graph(dE_scaled=l["dE scaled"])
-  # 8 metal nodes, each with a color and an atom (Z)
   for i in range(1, 9):
     col = l[f"Color Metal{i}"].lower()
     colR, colG, colB = 1 if col=="r" else 0, 1 if col=="v" else 0, 1 if col=="b" else 0
-    G.add_node(f"{ng}_M{i}", colR=colR, colG=colG, colB=colB, atom=l["Z"]/118) #, dE_scaled=l["dE scaled"])
+    G.add_node(f"{ng}_M{i}", colR=colR, colG=colG, colB=colB, atom=l["Z"]) #, dE_scaled=l["dE scaled"])
     colors.append(col if col != "v" else "g")
   for i in range(9,21):
-    G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9/118) #, dE_scaled=l["dE scaled"])
+    G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9) #, dE_scaled=l["dE scaled"])
     colors.append("lightgrey")
-  G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19/118) #, dE_scaled=l["dE scaled"])
+  G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19) #, dE_scaled=l["dE scaled"])
   colors.append("lightgrey")
   # Each M has a shift wrt a F atom which is a factor of a b or c depending on the direction
   G.add_edge(f"{ng}_M1", f"{ng}_F9" , distance=np.round(distMK(1,0.25+l["M1 shift xF9" ]*0.0001,0,0,l["a"],l["b"],l["c"]),3))
@@ -82,6 +86,13 @@ def graph_from_line(l, G=None, colors=[]):
   G.add_edge(f"{ng}_F14", f"{ng}_K", distance=np.round(dist(0,0,0.25+l["M4 shift zF14" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
   G.add_edge(f"{ng}_F13", f"{ng}_K", distance=np.round(dist(0,0,0.25+l["M6 shift zF13" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
   G.add_edge(f"{ng}_F18", f"{ng}_K", distance=np.round(dist(0,0,0.25+l["M6 shift zF18" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  
+  # adding direct links between every metal and every other metal
+  # TODO: should there be a link between every F atom as well? and F and the other metals?
+  for i in range(1,8):
+     for j in range(i+1,9):
+        G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}", distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]), 3))
+
   return G, colors
 
 def displayGraph(G, ng, colors):
@@ -112,8 +123,13 @@ if __name__ == "__main__":
     df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
     print("*"*6,"converting to graphs", "*"*6)
     # normalise output
-    # test standardisation ? 
+    # TODO: test standardisation ? 
     df["dE scaled"] = ((df["dE scaled"] - df["dE scaled"].min()) / (df["dE scaled"].max()-df["dE scaled"].min()))
+    # G, colors = graph_from_line(df.iloc[0])
+    # print(G)
+    # print(colors)
+    # displayGraph(G, 1, colors)
+    # sys.exit(0)
     train_df = df.sample(int(len(df)*0.8), random_state=42)
     test_df = df.drop(train_df.index)
     train_list = []

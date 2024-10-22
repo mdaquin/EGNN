@@ -18,7 +18,7 @@ def train():
         a = data.atom.view(data.atom.size(0), -1)
         x = torch.hstack((cR,cG,cB,a)).to(torch.float32)
         x = x.to(device)
-        out = model(x, data.edge_index, data.batch, data.distance.to(torch.float).view(len(data.distance), -1))  # Perform a single forward pass.
+        out = model(x, data.edge_index, data.batch, data.distance.to(torch.float).view(len(1-data.distance), -1))  # Perform a single forward pass.
         out[out == float("Inf")] = 0    
         real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1)
         # print(torch.hstack((out, real)))
@@ -39,7 +39,7 @@ def test(model, loader, show=False):
          a = data.atom.view(data.atom.size(0), -1)
          x = torch.hstack((cR,cG,cB,a)).to(torch.float32)
          x=x.to(device)
-         out = model(x, data.edge_index, data.batch, data.distance.to(torch.float).view(len(data.distance), -1)).detach()
+         out = model(x, data.edge_index, data.batch, data.distance.to(torch.float).view(len(1-data.distance), -1)).detach()
          real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1).detach()
          err = (real-out).abs()
          if errs is None: errs = err

@@ -110,6 +110,13 @@ def displayGraph(G, ng, colors):
     plt.show()
 
 
+
+# add on hot encoding for PK and M
+# add direct relations between Ms
+# try 1,1,1 for color of F and K
+# search for neighborhood level in GNN
+
+
 def displayLargeGraph(G, colors):
     plt.figure(figsize=(10,10))
     # should create positions myself...

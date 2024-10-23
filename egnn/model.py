@@ -37,18 +37,18 @@ class EGNN(Module):
         x = self.conv4(x, edge_index, edge_weight=edge_weights)
         x = (res+x).relu()
         res = x
-        x = self.conv5(x, edge_index, edge_weight=edge_weights)
-        x = (res+x).relu()
-        res = x
-        x = self.conv6(x, edge_index, edge_weight=edge_weights)
-        x = (res+x).relu()
-        res = x
-        x = self.conv7(x, edge_index, edge_weight=edge_weights)
-        x = (res+x).relu()
-        res = x
-        x = self.conv8(x, edge_index, edge_weight=edge_weights)
-        x = x.relu()
-        x = (res+x).relu()
+        # x = self.conv5(x, edge_index, edge_weight=edge_weights)
+        # x = (res+x).relu()
+        # res = x
+        # x = self.conv6(x, edge_index, edge_weight=edge_weights)
+        # x = (res+x).relu()
+        # res = x
+        # x = self.conv7(x, edge_index, edge_weight=edge_weights)
+        # x = (res+x).relu()
+        # res = x
+        # x = self.conv8(x, edge_index, edge_weight=edge_weights)
+        # x = x.relu()
+        # x = (res+x).relu()
 
         x = global_mean_pool(x, batch) 
         res = x

@@ -81,8 +81,6 @@ print(f'First graph:{train_dataset[0]}')
 print(f'Number of test graphs: {len(test_dataset)}')
 print(f'First graph:{test_dataset[0]}')
 
-# TODO: normalise distances... make no difference currently
-
 # TODO: batch size as option
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=200, shuffle=False)

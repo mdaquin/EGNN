@@ -30,7 +30,7 @@ def train():
         optimizer.step()  # Update parameters based on gradients.
         optimizer.zero_grad()  # Clear gradients.
 
-def test(model, loader, show=False):
+def test(model, loader, show=False, clear=False):
      model.eval()
      sum=0
      errs = None
@@ -52,17 +52,18 @@ def test(model, loader, show=False):
          else: errs = torch.vstack((errs, err))
          if show:
              if toshow is None: toshow = torch.hstack((real,out))
-             else: toshow = torch.vstack(torch.hstack(real, out))
+             else: toshow = torch.vstack((toshow, torch.hstack((real, out))))
          #break
      # print(apes)
      # print(apes.sum(dim=0))
      if show: 
          # print(toshow)
-         plt.clf()
-         plt.scatter(toshow.T[0], toshow.T[1])
+         if clear: plt.clf()
+         c="b" if not clear else "lightgrey"
+         plt.scatter(toshow.T[0], toshow.T[1], color=c)
          plt.plot([0.0, 1.0], [0.0, 1.0], color="r")
-         plt.draw()
-         plt.pause(0.0001)
+         if not clear: plt.draw()
+         if not clear: plt.pause(0.0001)
      return errs.nanmean()
 
 plt.ion()
@@ -100,7 +101,7 @@ for epoch in range(1, nepoch+1):
     tt = round((time.time()-t1)*1000)
     ttt += tt
     t1 = time.time()
-    train_acc = test(model, train_loader)
+    train_acc = test(model, train_loader, show=True, clear=True)
     test_acc = test(model, test_loader, show=True)
     te = round((time.time()-t1)*1000)
     tte += te

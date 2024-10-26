@@ -86,7 +86,7 @@ print(f'First graph:{test_dataset[0]}')
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=200, shuffle=False)
 model = EGNN(hidden_channels=128, K=2).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.0001) # LR in params
+optimizer = torch.optim.Adam(model.parameters(), lr=0.00005) # LR in params
 criterion = torch.nn.MSELoss() # TODO: in params
 # criterion = torch.nn.L1Loss() 
 
@@ -109,7 +109,7 @@ for epoch in range(1, nepoch+1):
         best_test = test_acc
         best_model = copy.deepcopy(model)
         best_epoch = epoch
-    print(f'Epoch: {epoch:03d} ({tt:04d}/{te:04d}), Train MAE: {train_acc:.4f}, Test MAE: {test_acc:.4f}')
+    print(f'Epoch: {epoch:03d} ({tt:04d}/{te:04d}), Train MAE: {train_acc:.4f}, Test MAE: {test_acc:.4f} (best: {best_test:.4f})')
 
 print("Best MAE on test", best_test,"at",best_epoch)
 print(f"Total time {round(ttt/1000):04d}s for training, {round(tte/1000):04d}s for testing")

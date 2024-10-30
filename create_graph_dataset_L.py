@@ -45,6 +45,10 @@ def displayGraph(G, ng, colors):
     nx.draw(G, with_labels=True, node_size=1000, node_color=colors, pos=pos)
     edge_labels = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=nx.get_edge_attributes(G, "distance"))
     node_labels = nx.draw_networkx_labels(G, pos=pos)#, labels=nx.get_node_attributes(G, "atom"))
+    for u, v, data in G.edges(data=True):
+        if 'metal_interaction' in data and data['metal_interaction'] == 1:
+            nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], edge_color='red',  width=2) 
+
     plt.show()
 
 def graph_from_line_vec(l, G=None, colors=[]):
@@ -71,8 +75,15 @@ def graph_from_line_vec(l, G=None, colors=[]):
   # TODO: should there be a link between every F atom as well? and F and the other metals?
   for i in range(1,9):
      for j in range(i,9):
-        G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}", distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]), 3))
-
+        G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}", distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]), 3), metal_interaction=0)
+        
+        
+  G.add_edge(f"{ng}_M6", f"{ng}_M2", metal_interaction=1)
+  G.add_edge(f"{ng}_M8", f"{ng}_M4", metal_interaction=1)
+  G.add_edge(f"{ng}_M5", f"{ng}_M1", metal_interaction=1)
+  G.add_edge(f"{ng}_M7", f"{ng}_M3", metal_interaction=1)
+      
+        
   return G, colors,ng
 
 # add on hot encoding for PK and M
@@ -98,9 +109,6 @@ if __name__ == "__main__":
     train_df = df.sample(int(len(df)*0.8), random_state=42)
     test_df = df.drop(train_df.index)
     train_list = []
-    
-    
-    
     for l in train_df.iloc: train_list.append(from_networkx(graph_from_line_vec(l)[0]))
     # normalise... 
     test_list = []

@@ -104,7 +104,7 @@ best_test = None
 best_epoch = None
 ttt=0
 tte=0
-nepoch = 10000 # in params
+nepoch = 1000 # in params
 for epoch in range(1, nepoch+1):
     t1 = time.time()
     train()

@@ -13,9 +13,9 @@ from torch_geometric.data.data import Data
 class EGNN(Module):
     def __init__(self, hidden_channels=16, K=3):
         super(EGNN, self).__init__()
-        self.conv1 = GATv2Conv(7, hidden_channels, add_self_loops=False, edge_dim=4) 
-        self.pool = EdgePooling(hidden_channels) # not the right way...
-        self.conv2 = GCNConv(hidden_channels, hidden_channels, add_self_loops=False) #, edge_dim=4) 
+        self.conv1 = GATv2Conv(7, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
+        self.conv11 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
+        self.conv2 = GCNConv(3*hidden_channels, hidden_channels, add_self_loops=False) #, edge_dim=4) 
     
         self.lin1 = Linear(hidden_channels, hidden_channels)
         self.lin2 = Linear(hidden_channels, hidden_channels)
@@ -26,12 +26,15 @@ class EGNN(Module):
         res = x
         x = self.conv1(x, edge_index, edge_attr=edge_attr)
         x = x.relu()
+        x = self.conv11(x, edge_index, edge_attr=edge_attr)
+        x = x.relu()
+ 
         d = max_pool_neighbor_x(Data(x, edge_index)) # TODO : can pooling take into account edge attributes?
         x = d.x
         edge_index = d.edge_index
         res = x
         x = self.conv2(x, edge_index) #, edge_attr=edge_attr) # (weights/attr are lost in pooling?)
-        x = (res+x).relu()
+        x = x.relu()
 
         x = global_max_pool(x, batch) 
         res = x

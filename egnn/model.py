@@ -15,7 +15,7 @@ class EGNN(Module):
         super(EGNN, self).__init__()
         self.conv1 = GCNConv(7, hidden_channels) 
         self.pool = EdgePooling(hidden_channels) # not the right way...
-        self.conv2 = GCNConv(hidden_channels, hidden_channels)  # TODO: check if edge features could be used... for distance
+        self.conv2 = GCNConv(hidden_channels, hidden_channels) 
         self.conv3 = GCNConv(hidden_channels, hidden_channels)
         self.conv4 = GCNConv(hidden_channels, hidden_channels)
         self.conv5 = GCNConv(hidden_channels, hidden_channels)

@@ -21,7 +21,7 @@ def train():
         k = data.potassium.view(data.potassium.size(0), -1)
         x = torch.hstack((cR,cG,cB,a,m,f,k)).to(torch.float32)
         x = x.to(device)
-        out = model(x, data.edge_index, data.batch, data.distance.to(torch.float).view(len(1-data.distance), -1))  # Perform a single forward pass.
+        out = model(x, data.edge_index, data.batch, data.distance.to(torch.float).view(len(1-data.distance), -1)) 
         out[out == float("Inf")] = 0    
         real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1)
         # print(torch.hstack((out, real)))
@@ -87,7 +87,7 @@ train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=200, shuffle=False)
 model = EGNN(hidden_channels=128, K=2).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.00005) # LR in params
-criterion = torch.nn.MSELoss() # TODO: in params
+criterion = torch.nn.MSELoss()
 # criterion = torch.nn.L1Loss() 
 
 best_test = None

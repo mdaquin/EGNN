@@ -6,7 +6,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import torch
 from torch_geometric.utils.convert import from_networkx
-from egnn.dataset import EGNNDataset 
+from egnn.dataset import EGNNDataset
 
 def posM(nb):
   match nb:
@@ -45,52 +45,133 @@ def graph_from_line(l, G=None, colors=[]):
   G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19, metal=0, fluoride=0, potassium=1) #, dE_scaled=l["dE scaled"])
   colors.append("lightgrey")
   # Each M has a shift wrt a F atom which is a factor of a b or c depending on the direction
-  G.add_edge(f"{ng}_M1", f"{ng}_F9" , distance=np.round(distMK(1,0.25+l["M1 shift xF9" ]*0.0001,0,0,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F9", f"{ng}_M5" , distance=np.round(distMK(5,0.25+l["M1 shift xF9" ]*0.0001,0,0,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M4", f"{ng}_F20", distance=np.round(distMK(4,0.25+l["M4 shift xF20"]*0.0001,0.5,0.5,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F20", f"{ng}_M8", distance=np.round(distMK(8,0.25+l["M4 shift xF20"]*0.0001,0.5,0.5,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M6", f"{ng}_F16", distance=np.round(distMK(6,0.25+l["M6 shift xF16"]*0.0001,0,0.5,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F16", f"{ng}_M2", distance=np.round(distMK(2,0.25+l["M6 shift xF16"]*0.0001,0,0.5,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M7", f"{ng}_F15", distance=np.round(distMK(7,0.25+l["M7 shift xF15"]*0.0001,0.5,0,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F15", f"{ng}_M3", distance=np.round(distMK(3,0.25+l["M7 shift xF15"]*0.0001,0.5,0,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M1", f"{ng}_F10", distance=np.round(distMK(1,0,0.25+l["M1 shift yF10"]*0.0001,0,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F10", f"{ng}_M3", distance=np.round(distMK(3,0,0.25+l["M1 shift yF10"]*0.0001,0,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M4", f"{ng}_F17", distance=np.round(distMK(4,0,0.25+l["M4 shift yF17"]*0.0001,0.5,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F17", f"{ng}_M2", distance=np.round(distMK(2,0,0.25+l["M4 shift yF17"]*0.0001,0.5,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M6", f"{ng}_F19", distance=np.round(distMK(6,0.5,0.25+l["M6 shift yF19"]*0.0001,0.5,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F19", f"{ng}_M8", distance=np.round(distMK(8,0.5,0.25+l["M6 shift yF19"]*0.0001,0.5,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M7", f"{ng}_F12", distance=np.round(distMK(7,0.5,0.25+l["M7 shift yF12"]*0.0001,0,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F12", f"{ng}_M5", distance=np.round(distMK(5,0.5,0.25+l["M7 shift yF12"]*0.0001,0,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M1", f"{ng}_F11", distance=np.round(distMK(1,0,0,0.25+l["M1 shift zF11"]*0.0001,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F11", f"{ng}_M2", distance=np.round(distMK(2,0,0,0.25+l["M1 shift zF11"]*0.0001,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M4", f"{ng}_F14", distance=np.round(distMK(4,0,0.5,0.25+l["M4 shift zF14"]*0.0001,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F14", f"{ng}_M3", distance=np.round(distMK(3,0,0.5,0.25+l["M4 shift zF14"]*0.0001,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_M6", f"{ng}_F13", distance=np.round(distMK(6,0.5,0,0.25+l["M6 shift zF13"]*0.0001,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F13", f"{ng}_M5", distance=np.round(distMK(5,0.5,0,0.25+l["M6 shift zF13"]*0.0001,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M1", f"{ng}_F9" ,
+             dx=1, dy=0, dz=0,
+             distance=np.round(distMK(1,0.25+l["M1 shift xF9" ]*0.0001,0,0,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F9", f"{ng}_M5" ,
+             dx=1, dy=0, dz=0,
+             distance=np.round(distMK(5,0.25+l["M1 shift xF9" ]*0.0001,0,0,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M4", f"{ng}_F20",
+             dx=1, dy=0, dz=0,
+             distance=np.round(distMK(4,0.25+l["M4 shift xF20"]*0.0001,0.5,0.5,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F20", f"{ng}_M8",
+             dx=1, dy=0, dz=0,
+             distance=np.round(distMK(8,0.25+l["M4 shift xF20"]*0.0001,0.5,0.5,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M6", f"{ng}_F16",
+             dx=1, dy=0, dz=0,
+             distance=np.round(distMK(6,0.25+l["M6 shift xF16"]*0.0001,0,0.5,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F16", f"{ng}_M2",
+             dx=1, dy=0, dz=0,
+             distance=np.round(distMK(2,0.25+l["M6 shift xF16"]*0.0001,0,0.5,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M7", f"{ng}_F15",
+             dx=1, dy=0, dz=0,
+             distance=np.round(distMK(7,0.25+l["M7 shift xF15"]*0.0001,0.5,0,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F15", f"{ng}_M3",
+             dx=1, dy=0, dz=0,
+             distance=np.round(distMK(3,0.25+l["M7 shift xF15"]*0.0001,0.5,0,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M1", f"{ng}_F10",
+             dx=0, dy=1, dz=0,
+             distance=np.round(distMK(1,0,0.25+l["M1 shift yF10"]*0.0001,0,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F10", f"{ng}_M3",
+             dx=0, dy=1, dz=0,
+             distance=np.round(distMK(3,0,0.25+l["M1 shift yF10"]*0.0001,0,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M4", f"{ng}_F17",
+             dx=0, dy=1, dz=0,
+             distance=np.round(distMK(4,0,0.25+l["M4 shift yF17"]*0.0001,0.5,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F17", f"{ng}_M2",
+             dx=0, dy=1, dz=0,
+             distance=np.round(distMK(2,0,0.25+l["M4 shift yF17"]*0.0001,0.5,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M6", f"{ng}_F19",
+             dx=0, dy=1, dz=0,
+             distance=np.round(distMK(6,0.5,0.25+l["M6 shift yF19"]*0.0001,0.5,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F19", f"{ng}_M8",
+             dx=0, dy=1, dz=0,
+             distance=np.round(distMK(8,0.5,0.25+l["M6 shift yF19"]*0.0001,0.5,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M7", f"{ng}_F12",
+             dx=0, dy=1, dz=0,
+             distance=np.round(distMK(7,0.5,0.25+l["M7 shift yF12"]*0.0001,0,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F12", f"{ng}_M5",
+             dx=0, dy=1, dz=0,
+             distance=np.round(distMK(5,0.5,0.25+l["M7 shift yF12"]*0.0001,0,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M1", f"{ng}_F11",
+             dx=0, dy=0, dz=1,
+             distance=np.round(distMK(1,0,0,0.25+l["M1 shift zF11"]*0.0001,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F11", f"{ng}_M2",
+             dx=0, dy=0, dz=1,
+             distance=np.round(distMK(2,0,0,0.25+l["M1 shift zF11"]*0.0001,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M4", f"{ng}_F14",
+             dx=0, dy=0, dz=1,
+             distance=np.round(distMK(4,0,0.5,0.25+l["M4 shift zF14"]*0.0001,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F14", f"{ng}_M3",
+             dx=0, dy=0, dz=1,
+             distance=np.round(distMK(3,0,0.5,0.25+l["M4 shift zF14"]*0.0001,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M6", f"{ng}_F13",
+             dx=0, dy=0, dz=1,
+             distance=np.round(distMK(6,0.5,0,0.25+l["M6 shift zF13"]*0.0001,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F13", f"{ng}_M5",
+             dx=0, dy=0, dz=1,
+             distance=np.round(distMK(5,0.5,0,0.25+l["M6 shift zF13"]*0.0001,l["a"],l["b"],l["c"]),3))
   # here the column is called M6 shift zF18, but it should be M8 shift zF18...
-  G.add_edge(f"{ng}_M8", f"{ng}_F18", distance=np.round(distMK(8,0.5,0.5,0.25+l["M6 shift zF18"]*0.0001,l["a"],l["b"],l["c"]),3))
-  G.add_edge(f"{ng}_F18", f"{ng}_M7", distance=np.round(distMK(7,0.5,0.5,0.25+l["M6 shift zF18"]*0.0001,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_M8", f"{ng}_F18",
+             dx=0, dy=0, dz=1,
+             distance=np.round(distMK(8,0.5,0.5,0.25+l["M6 shift zF18"]*0.0001,l["a"],l["b"],l["c"]),3))
+  G.add_edge(f"{ng}_F18", f"{ng}_M7",
+             dx=0, dy=0, dz=1,
+             distance=np.round(distMK(7,0.5,0.5,0.25+l["M6 shift zF18"]*0.0001,l["a"],l["b"],l["c"]),3))
   # # the K atom has a 3 directional shift as a factor of a b or c
   kx,ky,kz = (0.25+(l["K shift x"]*0.001)),(0.25+(l["K shift y"]*0.001)),(0.25+(l["K shift z"]*0.001))
   for i in range(1,9):
-      G.add_edge(f"{ng}_M{i}", f"{ng}_K", distance=np.round(distMK(i, kx, ky, kz, l["a"], l["b"], l["c"]),3))
-  G.add_edge(f"{ng}_F9", f"{ng}_K", distance=np.round(dist(0.25+l["M1 shift xF9" ]*0.0001,0,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F20", f"{ng}_K", distance=np.round(dist(0.25+l["M4 shift xF20" ]*0.0001,0,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F16", f"{ng}_K", distance=np.round(dist(0.25+l["M6 shift xF16" ]*0.0001,0,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F15", f"{ng}_K", distance=np.round(dist(0.25+l["M7 shift xF15" ]*0.0001,0,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F10", f"{ng}_K", distance=np.round(dist(0,0.25+l["M1 shift yF10" ]*0.0001,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F17", f"{ng}_K", distance=np.round(dist(0,0.25+l["M4 shift yF17" ]*0.0001,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F19", f"{ng}_K", distance=np.round(dist(0,0.25+l["M6 shift yF19" ]*0.0001,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F12", f"{ng}_K", distance=np.round(dist(0,0.25+l["M7 shift yF12" ]*0.0001,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F11", f"{ng}_K", distance=np.round(dist(0,0,0.25+l["M1 shift zF11" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F14", f"{ng}_K", distance=np.round(dist(0,0,0.25+l["M4 shift zF14" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F13", f"{ng}_K", distance=np.round(dist(0,0,0.25+l["M6 shift zF13" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  G.add_edge(f"{ng}_F18", f"{ng}_K", distance=np.round(dist(0,0,0.25+l["M6 shift zF18" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
-  
+      G.add_edge(f"{ng}_M{i}", f"{ng}_K",
+                 dx=0, dy=0, dz=0,
+                 distance=np.round(distMK(i, kx, ky, kz, l["a"], l["b"], l["c"]),3))
+  G.add_edge(f"{ng}_F9", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0.25+l["M1 shift xF9" ]*0.0001,0,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F20", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0.25+l["M4 shift xF20" ]*0.0001,0,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F16", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0.25+l["M6 shift xF16" ]*0.0001,0,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F15", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0.25+l["M7 shift xF15" ]*0.0001,0,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F10", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0,0.25+l["M1 shift yF10" ]*0.0001,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F17", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0,0.25+l["M4 shift yF17" ]*0.0001,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F19", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0,0.25+l["M6 shift yF19" ]*0.0001,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F12", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0,0.25+l["M7 shift yF12" ]*0.0001,0,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F11", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0,0,0.25+l["M1 shift zF11" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F14", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0,0,0.25+l["M4 shift zF14" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F13", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0,0,0.25+l["M6 shift zF13" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+  G.add_edge(f"{ng}_F18", f"{ng}_K",
+             dx=0, dy=0, dz=0,
+             distance=np.round(dist(0,0,0.25+l["M6 shift zF18" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
+
   # adding direct links between every metal and every other metal
   for i in range(1,9):
      for j in range(i,9):
-        G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}", distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]), 3))
+        posi = posM(i)
+        posj = posM(j)
+        x = 1 if posi[0] != posj[0] else 0
+        y = 1 if posi[1] != posj[1] else 0
+        z = 1 if posi[2] != posj[2] else 0
+        G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",
+                   dx=x, dy=y, dz=z,
+                   distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]), 3))
 
   # only connect metals along x,y,z axis
   # G.add_edge(f"{ng}_M2", f"{ng}_M4", distance=np.round(distMM(2,4,l["a"],l["b"],l["c"]), 3))
@@ -142,7 +223,7 @@ if __name__ == "__main__":
     df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
     print("*"*6,"converting to graphs", "*"*6)
     # normalise output
-    # TODO: test standardisation ? 
+    # TODO: test standardisation ?
     df["dE scaled"] = ((df["dE scaled"] - df["dE scaled"].min()) / (df["dE scaled"].max()-df["dE scaled"].min()))
     # G, colors = graph_from_line(df.iloc[0])
     # print(G)
@@ -153,7 +234,7 @@ if __name__ == "__main__":
     test_df = df.drop(train_df.index)
     train_list = []
     for l in train_df.iloc: train_list.append(from_networkx(graph_from_line(l)[0]))
-    # normalise... 
+    # normalise...
     test_list = []
     for l in test_df.iloc: test_list.append(from_networkx(graph_from_line(l)[0]))
     print("*"*6,"saving", "*"*6)
@@ -162,5 +243,5 @@ if __name__ == "__main__":
     torch.save(train, "data/train.pt")
     torch.save(test, "data/test.pt")
 
-    
+
 

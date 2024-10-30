@@ -129,12 +129,3 @@ if __name__ == "__main__":
 
     
 
-#### test #### 
-'''
-from torch_geometric.loader import DataLoader 
-train_dataset = torch.load("train_vec.pt", weights_only=False)
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-for data in train_loader:  # Iterate in batches over the training dataset.
-         x = data.node_feature
-print (x)
-'''

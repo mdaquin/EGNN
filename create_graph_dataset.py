@@ -88,8 +88,8 @@ def graph_from_line(l, G=None, colors=[]):
   G.add_edge(f"{ng}_F18", f"{ng}_K", distance=np.round(dist(0,0,0.25+l["M6 shift zF18" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3))
   
   # adding direct links between every metal and every other metal
-  for i in range(1,8):
-     for j in range(i+1,9):
+  for i in range(1,9):
+     for j in range(i,9):
         G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}", distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]), 3))
 
   # only connect metals along x,y,z axis

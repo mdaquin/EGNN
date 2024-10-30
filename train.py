@@ -90,7 +90,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.00005) # LR in params
 criterion = torch.nn.MSELoss()
 # criterion = torch.nn.L1Loss() 
 
-best_test = None
+best_test = None 
 best_epoch = None
 ttt=0
 tte=0

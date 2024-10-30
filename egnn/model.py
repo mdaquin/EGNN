@@ -9,7 +9,7 @@ from torch_geometric.data.data import Data
 # TODO: make it so that the node features are 1 vector
 # TODO: figure out how to decide on nb channels
 # TODO: try other aggregations / pooling
-# TODO: try layers with edge attributes (and put type of interaction on edges?)
+# TODO: #2 try layers with edge attributes (and direction on edges?)
 class EGNN(Module):
     def __init__(self, hidden_channels=16, K=3):
         super(EGNN, self).__init__()

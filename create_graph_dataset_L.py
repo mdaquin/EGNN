@@ -89,8 +89,8 @@ def graph_from_line_vec(l, G=None, colors=[]):
 
   # adding direct links between every metal and every other metal
   # TODO: should there be a link between every F atom as well? and F and the other metals?
-  for i in range(1,8):
-     for j in range(i+1,9):
+  for i in range(1,9):
+     for j in range(i,9):
         G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}", distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]), 3))
 
   return G, colors

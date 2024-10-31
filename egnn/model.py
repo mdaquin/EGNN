@@ -15,6 +15,7 @@ class EGNN(Module):
         super(EGNN, self).__init__()
         self.conv1 = GATv2Conv(7, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
         self.conv11 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
+        self.conv12 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
         self.conv2 = GCNConv(3*hidden_channels, hidden_channels, add_self_loops=False) #, edge_dim=4) 
     
         self.lin1 = Linear(hidden_channels, hidden_channels)
@@ -28,7 +29,9 @@ class EGNN(Module):
         x = x.relu()
         x = self.conv11(x, edge_index, edge_attr=edge_attr)
         x = x.relu()
- 
+        x = self.conv12(x, edge_index, edge_attr=edge_attr)
+        x = x.relu()
+
         d = max_pool_neighbor_x(Data(x, edge_index)) # TODO : can pooling take into account edge attributes?
         x = d.x
         edge_index = d.edge_index

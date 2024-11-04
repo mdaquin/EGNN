@@ -7,6 +7,42 @@ import matplotlib.pyplot as plt
 import torch
 from torch_geometric.utils.convert import from_networkx
 from egnn.dataset import EGNNDataset 
+import random
+
+def determine_interaction(metal1, metal2, direction):
+    """
+    Determines the interaction type based on metal colors, orbitals, and direction.
+
+    Parameters:
+    metal1 (str): Color of the first metal.
+    metal2 (str): Color of the second metal.
+    direction (str): Direction of interaction (e.g., "x", "y", "z").
+
+    Returns:
+    str: Interaction type (I, K, J, or S).
+    """
+
+    color_orbital_map = {
+    "r": "yz", 
+    "b": "xz", 
+    "v": "xy",
+    "g": "xy"
+    }
+    
+    orbital1 = color_orbital_map.get(metal1)
+    orbital2 = color_orbital_map.get(metal2)
+    
+    if orbital1 == orbital2:
+        if orbital1.__contains__(direction):
+            return "I"
+        else:
+            return "K"
+    if orbital1 != orbital2:
+        if orbital1.__contains__(direction) and orbital2.__contains__(direction):
+            return "J"
+        else:
+            return "S"
+        
 
 def posM(nb):
   match nb:
@@ -32,17 +68,62 @@ def distMM(nbm1, nbm2, a, b, c):
     return dist(met1[0], met1[1], met1[2], met2[0], met2[1], met2[2], a, b, c)
 
 
+def graph_from_line_vec(l, G=None, colors=[]):
+  colors=[]  
+  ng = l.name
+  cutoff_distance = 5.0 
+  
+  if G is None: G=nx.Graph(dE_scaled=l["dE scaled"])
+  for i in range(1, 9):
+    col = l[f"Color Metal{i}"].lower()
+    colR, colG, colB = 1 if col=="r" else 0, 1 if col=="v" else 0, 1 if col=="b" else 0
+    G.add_node(f"{ng}_M{i}", colR=colR, colG=colG, colB=colB, atom=l["Z"])
+
+    colors.append(col if col != "v" else "g")
+  
+  for i in range(1,9):
+      for j in range(i+1,9):
+               distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]),3)
+               if distance <= cutoff_distance:
+                   posi = posM(i)
+                   posj = posM(j)
+                   x = 1 if posi[0] != posj[0] else 0
+                   y = 1 if posi[1] != posj[1] else 0
+                   z = 1 if posi[2] != posj[2] else 0
+                   
+                   direction = ""
+                   if x == 1:
+                       direction += "x"
+                   if y == 1:
+                       direction += "y"
+                   if z == 1:
+                       direction += "z"
+                   colour1 = l[f"Color Metal{i}"].lower()
+                   colour2 = l[f"Color Metal{j}"].lower()
+    
+                   interaction_type = determine_interaction(colour1, colour2,  direction)
+                   
+                   interaction_color = {
+                "I": "green",
+                "K": "grey",
+                "J": "red",
+                "S": "blue"
+            }.get(interaction_type, default_color)
+    
+                   G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",
+                              dx=x, dy=y, dz=z,distance=distance,interaction_color=interaction_color)
+
+  return G, colors,ng
+             
+  
+
 
 def displayGraph(G, ng, colors):
     pos = {f"{ng}_M1": (-0.5, -0.5), f"{ng}_M2": (-0.5, 1), f"{ng}_M3": (1, -0.5), f"{ng}_M4": (1, 1),
-           f"{ng}_M5": (-1, -1), f"{ng}_M6": (-1, 0.5), f"{ng}_M7": (0.5, -1), f"{ng}_M8": (0.5, 0.5),
-           f"{ng}_F9": (-0.75, -0.75), f"{ng}_F10": (0.25, -0.5), f"{ng}_F11": (-0.5, 0.25),
-           f"{ng}_F12": (-0.25, -1), f"{ng}_F13": (-1, -0.25), f"{ng}_F14": (1, 0.25),
-           f"{ng}_F15": (0.75, -0.75), f"{ng}_F16": (-0.75, 0.75), f"{ng}_F17": (0.25, 1),
-           f"{ng}_F18": (0.5, -0.25), f"{ng}_F19": (-0.25, 0.5), f"{ng}_F20": (0.75, 0.75),
-           f"{ng}_K": (0,0)}
+           f"{ng}_M5": (-1, -1), f"{ng}_M6": (-1, 0.5), f"{ng}_M7": (0.5, -1), f"{ng}_M8": (0.5, 0.5)}
     plt.figure(figsize=(8,8))
-    nx.draw(G, with_labels=True, node_size=1000, node_color=colors, pos=pos)
+    edge_colors = [G[u][v]['interaction_color'] for u, v in G.edges() if 'interaction_color' in G[u][v]]
+    nx.draw(G, with_labels=True, node_size=1000, node_color=colors, pos=pos, edge_color=edge_colors) 
     edge_labels = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=nx.get_edge_attributes(G, "distance"))
     node_labels = nx.draw_networkx_labels(G, pos=pos)#, labels=nx.get_node_attributes(G, "atom"))
     for u, v, data in G.edges(data=True):
@@ -51,60 +132,15 @@ def displayGraph(G, ng, colors):
 
     plt.show()
 
-def graph_from_line_vec(l, G=None, colors=[]):
-  ng = l.name
-  if G is None: G=nx.Graph(dE_scaled=l["dE scaled"])
-  for i in range(1, 9):
-    col = l[f"Color Metal{i}"].lower()
-    atom = l["Z"]
-    colR, colG, colB = 1 if col=="r" else 0, 1 if col=="v" else 0, 1 if col=="b" else 0
-    node_feature = [colR, colG, colB, atom, 1, 0, 0]
-
-    G.add_node(f"{ng}_M{i}", node_feature=node_feature) #, dE_scaled=l["dE scaled"])
-    colors.append(col if col != "v" else "g")
-  for i in range(9,21):
-
-    node_feature = [0, 0, 0, 9, 0, 1, 0] 
-    G.add_node(f"{ng}_F{i}", node_feature=node_feature) 
-    colors.append("lightgrey")
-  node_feature = [0, 0, 0, 19, 0, 0, 1]  
-  G.add_node(f"{ng}_K", node_feature=node_feature)
-  colors.append("lightgrey")
-
-  # adding direct links between every metal and every other metal
-  # TODO: should there be a link between every F atom as well? and F and the other metals?
-  for i in range(1,9):
-     for j in range(i,9):
-        G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}", distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]), 3), metal_interaction=0) # here is a blue color interaction 
-        
-        
-  G.add_edge(f"{ng}_M6", f"{ng}_M2", metal_interaction=1) # here is a red color interaction 
-  G.add_edge(f"{ng}_M8", f"{ng}_M4", metal_interaction=1)
-  G.add_edge(f"{ng}_M5", f"{ng}_M1", metal_interaction=1)
-  G.add_edge(f"{ng}_M7", f"{ng}_M3", metal_interaction=1)
-      
-        
-  return G, colors,ng
-
-# add on hot encoding for PK and M
-# add direct relations between Ms
-# try 1,1,1 for color of F and K
-# search for neighborhood level in GNN
-
 
 
 if __name__ == "__main__":
     print("*"*6,"loading Data", "*"*6)
     df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
-    print("*"*6,"converting to graphs", "*"*6)
-    # normalise output
-    # TODO: test standardisation ? 
+    print("*"*6,"converting to graphs", "*"*6) 
     df["dE scaled"] = ((df["dE scaled"] - df["dE scaled"].min()) / (df["dE scaled"].max()-df["dE scaled"].min()))
-    
-    linenb= 0
-    G,colors,ng = graph_from_line_vec(df.iloc[linenb])
-    displayGraph(G, ng, colors)
-    
+       
+    default_color = 'grey'
     
     train_df = df.sample(int(len(df)*0.8), random_state=42)
     test_df = df.drop(train_df.index)
@@ -119,6 +155,10 @@ if __name__ == "__main__":
     torch.save(train, "train_vec.pt")
     torch.save(test, "test_vec.pt")
     
+    linenb= random.randint(0,500)
+    #linenb = 0
+    G,colors,ng = graph_from_line_vec(train_df.iloc[linenb])
+    displayGraph(G, ng, colors)
 
     
 

@@ -13,7 +13,7 @@ from torch_geometric.data.data import Data
 class EGNN(Module):
     def __init__(self, hidden_channels=16, K=3):
         super(EGNN, self).__init__()
-        self.conv1 = GATv2Conv(7, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
+        self.conv1 = GATv2Conv(4, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
         self.conv11 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
         self.conv12 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=4, heads=3) 
         self.conv2 = GCNConv(3*hidden_channels, hidden_channels, add_self_loops=False) #, edge_dim=4) 

@@ -1,7 +1,7 @@
 import math
 import sys
 from egnn.dataset import EGNNDataset
-from egnn.model import EGNN
+from egnn.model_L import EGNN
 from torch_geometric.loader import DataLoader # type: ignore
 import matplotlib.pyplot as plt
 import torch
@@ -95,7 +95,7 @@ def test(model, loader, show=False, clear=False):
 
 plt.ion()
 plt.show()
-torch.manual_seed(42) 
+torch.cuda.manual_seed(42) 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
@@ -110,10 +110,14 @@ print(f'Number of test graphs: {len(test_dataset)}')
 print(f'First graph:{test_dataset[0]}')
 
 # TODO: batch size as option
+
+#lr=0.00005
+lr=0.001
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=200, shuffle=False)
 model = EGNN(hidden_channels=256, K=2).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.00005) # LR in params
+#model = simpleGNN(hidden_channels=128, K=2).to(device)
+optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 #criterion = torch.nn.MSELoss()
 criterion = torch.nn.L1Loss() 
 

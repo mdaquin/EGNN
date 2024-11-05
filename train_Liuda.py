@@ -17,6 +17,9 @@ def train():
         cG = data.colR.view(data.colG.size(0), -1)
         cB = data.colR.view(data.colB.size(0), -1)
         a = data.atom.view(data.atom.size(0), -1)
+        
+
+        
         # f = data.fluoride.view(data.fluoride.size(0), -1)
         # m = data.metal.view(data.metal.size(0), -1)
         # k = data.potassium.view(data.potassium.size(0), -1)
@@ -26,7 +29,13 @@ def train():
         dx = data.dx.to(torch.float).view(len(data.dx), -1)
         dy = data.dy.to(torch.float).view(len(data.dy), -1)
         dz = data.dz.to(torch.float).view(len(data.dz), -1)
-        edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
+        
+        cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
+        cIG = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
+        cIB = data.colIB.to(torch.float).view(len(data.colIB), -1)
+        cIGr = data.colIG.to(torch.float).view(len(data.colIG), -1)
+        
+        edAtt = torch.hstack((distance, dx, dy, dz,cIR,cIG,cIB,cIGr)).to(torch.float32)
         out = model(x, data.edge_index, data.batch, edAtt).cuda() 
         # out[out == float("Inf")] = 0    
         real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1)
@@ -38,7 +47,6 @@ def train():
 
 def test(model, loader, show=False, clear=False):
      model.eval()
-     sum=0
      errs = None
      if show: toshow = None
      for data in loader:  # Iterate in batches over the training/test dataset.
@@ -47,16 +55,23 @@ def test(model, loader, show=False, clear=False):
          cG = data.colR.view(data.colG.size(0), -1)
          cB = data.colR.view(data.colB.size(0), -1)
          a = data.atom.view(data.atom.size(0), -1)
+         
+         
          #f = data.fluoride.view(data.fluoride.size(0), -1)
          #m = data.metal.view(data.metal.size(0), -1)
          #k = data.potassium.view(data.potassium.size(0), -1)
          x = torch.hstack((cR,cG,cB,a)).to(torch.float32)
-         x=x.to(device).cuda()
+         x = x.to(device).cuda()
          distance=data.distance.to(torch.float).view(len(data.distance), -1)
          dx = data.dx.to(torch.float).view(len(data.dx), -1)
          dy = data.dy.to(torch.float).view(len(data.dy), -1)
          dz = data.dz.to(torch.float).view(len(data.dz), -1)
-         edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
+         cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
+         cIG = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
+         cIB = data.colIB.to(torch.float).view(len(data.colIB), -1)
+         cIGr = data.colIG.to(torch.float).view(len(data.colIG), -1)
+         
+         edAtt = torch.hstack((distance, dx, dy, dz,cIR,cIG,cIB,cIGr)).to(torch.float32)
          out = model(x, data.edge_index, data.batch, edAtt).detach()
          real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1).detach()
          err = (real-out).abs()

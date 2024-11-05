@@ -109,9 +109,11 @@ def graph_from_line_vec(l, G=None, colors=[]):
                 "J": "red",
                 "S": "blue"
             }.get(interaction_type, default_color)
-    
+                   
+                   
+                   colIR, colIGreen, colIB, colIG = 1 if interaction_color=="red" else 0, 1 if interaction_color=="green" else 0, 1 if interaction_color=="blue" else 0, 1 if interaction_color=="grey" else 0
                    G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",
-                              dx=x, dy=y, dz=z,distance=distance,interaction_color=interaction_color)
+                              dx=x, dy=y, dz=z,distance=distance,colIR=colIR, colIGreen=colIGreen, colIB=colIB, colIG=colIG, interaction_color=interaction_color)
 
   return G, colors,ng
              

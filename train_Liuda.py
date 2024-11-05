@@ -114,8 +114,8 @@ train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=200, shuffle=False)
 model = EGNN(hidden_channels=256, K=2).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.00005) # LR in params
-criterion = torch.nn.MSELoss()
-# criterion = torch.nn.L1Loss() 
+#criterion = torch.nn.MSELoss()
+criterion = torch.nn.L1Loss() 
 
 best_test = None 
 best_epoch = None

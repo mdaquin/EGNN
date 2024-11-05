@@ -1,6 +1,3 @@
-import math
-import sys
-from egnn.dataset import EGNNDataset
 from egnn.model import EGNN
 from torch_geometric.loader import DataLoader # type: ignore
 import matplotlib.pyplot as plt
@@ -13,8 +10,8 @@ def train():
     model.train()
     for data in train_loader:  # Iterate in batches over the training dataset.
         cR = data.colR.view(data.colR.size(0), -1)
-        cG = data.colR.view(data.colG.size(0), -1)
-        cB = data.colR.view(data.colB.size(0), -1)
+        cG = data.colG.view(data.colG.size(0), -1)
+        cB = data.colB.view(data.colB.size(0), -1)
         a = data.atom.view(data.atom.size(0), -1)
         # f = data.fluoride.view(data.fluoride.size(0), -1)
         # m = data.metal.view(data.metal.size(0), -1)
@@ -25,6 +22,10 @@ def train():
         dx = data.dx.to(torch.float).view(len(data.dx), -1)
         dy = data.dy.to(torch.float).view(len(data.dy), -1)
         dz = data.dz.to(torch.float).view(len(data.dz), -1)
+        #colir = data.colIR.to(torch.float).view(len(data.colIR), -1)
+        #colige = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
+        #colib = data.colIB.to(torch.float).view(len(data.colIB), -1)
+        #colig = data.colIB.to(torch.float).view(len(data.colIG), -1)
         edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
         out = model(x, data.edge_index, data.batch, edAtt) 
         # out[out == float("Inf")] = 0    
@@ -42,8 +43,8 @@ def test(model, loader, show=False, clear=False):
      if show: toshow = None
      for data in loader:  # Iterate in batches over the training/test dataset.
          cR = data.colR.view(data.colR.size(0), -1)
-         cG = data.colR.view(data.colG.size(0), -1)
-         cB = data.colR.view(data.colB.size(0), -1)
+         cG = data.colG.view(data.colG.size(0), -1)
+         cB = data.colB.view(data.colB.size(0), -1)
          a = data.atom.view(data.atom.size(0), -1)
          #f = data.fluoride.view(data.fluoride.size(0), -1)
          #m = data.metal.view(data.metal.size(0), -1)
@@ -83,8 +84,10 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
 train_dataset = torch.load("data/train.pt", weights_only=False)
+#train_dataset = torch.load("train_vec.pt", weights_only=False)
 min, max = train_dataset.normalise()
 test_dataset = torch.load("data/test.pt", weights_only=False)
+# test_dataset = torch.load("test_vec.pt", weights_only=False)
 test_dataset.normalise(min, max)
 
 print(f'Number of train graphs: {len(train_dataset)}')

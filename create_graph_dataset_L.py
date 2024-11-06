@@ -164,8 +164,8 @@ if __name__ == "__main__":
     print("*"*6,"saving", "*"*6)
     train = EGNNDataset(train_list)
     test = EGNNDataset(test_list)
-    torch.save(train, "data/train_cpu.pt")
-    torch.save(test, "data/test_cpu.pt")
+    torch.save(train, "data/train_gpu.pt")
+    torch.save(test, "data/test_gpu.pt")
     
 # =============================================================================
 #     if show_graph == True :

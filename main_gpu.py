@@ -51,9 +51,9 @@ for ii in range(1,nRuns+1):
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     
     os.system("python3.10 create_graph_dataset_L.py %s "%(ii))
-    train_dataset = torch.load("data/train_cpu.pt", weights_only=False)
+    train_dataset = torch.load("data/train_gpu.pt", weights_only=False)
     min, max = train_dataset.normalise()
-    test_dataset = torch.load("data/test_cpu.pt", weights_only=False)
+    test_dataset = torch.load("data/test_gpu.pt", weights_only=False)
     test_dataset.normalise(min, max)
     
     train_loader = DataLoader(train_dataset, batch_size=batch_size_train, shuffle=True)

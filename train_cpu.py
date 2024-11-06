@@ -6,7 +6,7 @@ torch.manual_seed(torch_seed)
 torch.cuda.manual_seed(torch_seed) 
 torch.cuda.manual_seed_all(torch_seed) 
 
-def train(model, train_loader,device,criterion,optimizer):
+def train(model, train_loader,device,criterion,optimizer,interaction_colors=True):
     model.train()
     for data in train_loader:  # Iterate in batches over the training dataset.
         data = data.to(device).cuda()  
@@ -23,12 +23,14 @@ def train(model, train_loader,device,criterion,optimizer):
         dy = data.dy.to(torch.float).view(len(data.dy), -1)
         dz = data.dz.to(torch.float).view(len(data.dz), -1)
         
-        cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
-        cIG = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
-        cIB = data.colIB.to(torch.float).view(len(data.colIB), -1)
-        cIGr = data.colIG.to(torch.float).view(len(data.colIG), -1)
-        
-        edAtt = torch.hstack((distance, dx, dy, dz,cIR,cIG,cIB,cIGr)).to(torch.float32)
+        if interaction_colors == True:
+            cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
+            cIG = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
+            cIB = data.colIB.to(torch.float).view(len(data.colIB), -1)
+            cIGr = data.colIG.to(torch.float).view(len(data.colIG), -1)
+            edAtt = torch.hstack((distance, dx, dy, dz,cIR,cIG,cIB,cIGr)).to(torch.float32)
+        else:
+            edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
         out = model(x, data.edge_index, data.batch, edAtt).cuda() 
         real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1)
         loss = criterion(out, real)  # Compute the loss.
@@ -38,7 +40,7 @@ def train(model, train_loader,device,criterion,optimizer):
         
     return loss    
    
-def test(model, loader, device,criterion,optimizer, show=False, clear=False):
+def test(model, loader, device,criterion,optimizer, show=False, clear=False,interaction_colors=True):
      model.eval()
      errs = None
      if show: toshow = None
@@ -56,12 +58,17 @@ def test(model, loader, device,criterion,optimizer, show=False, clear=False):
          dx = data.dx.to(torch.float).view(len(data.dx), -1)
          dy = data.dy.to(torch.float).view(len(data.dy), -1)
          dz = data.dz.to(torch.float).view(len(data.dz), -1)
-         cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
-         cIG = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
-         cIB = data.colIB.to(torch.float).view(len(data.colIB), -1)
-         cIGr = data.colIG.to(torch.float).view(len(data.colIG), -1)
          
-         edAtt = torch.hstack((distance, dx, dy, dz,cIR,cIG,cIB,cIGr)).to(torch.float32)
+         if interaction_colors == True:
+             cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
+             cIG = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
+             cIB = data.colIB.to(torch.float).view(len(data.colIB), -1)
+             cIGr = data.colIG.to(torch.float).view(len(data.colIG), -1)
+             edAtt = torch.hstack((distance, dx, dy, dz,cIR,cIG,cIB,cIGr)).to(torch.float32)
+         else:
+             edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
+         
+         
          out = model(x, data.edge_index, data.batch, edAtt).detach()
          real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1).detach()
          err = (real-out).abs()

@@ -1,11 +1,11 @@
 import sys,os
-from egnn.model_L import EGNN
+from egnn.model_cpu import EGNN
 from torch_geometric.loader import DataLoader # type: ignore
 import matplotlib.pyplot as plt
 import torch
 import copy, time
 import pandas as pd
-from train_gpu import train, test 
+from train_cpu import train, test 
 
 
 torch_seed = 42 
@@ -29,17 +29,26 @@ learning_rate    = 0.001
 batch_size_train = 64
 batch_size_test  = 200   
 
-model = EGNN(hidden_channels=256, K=2).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+interaction_colors = True 
+
+if interaction_colors == True:
+    edge_dimen = 8
+else:
+    edge_dimen = 4     
+
+
 criterion = torch.nn.L1Loss() 
 
 
 results = {'run': [], 'epoch': [], 'loss': [], 'MAE': []}
 
-nRuns = 10 
-nepoch = 1000  
+nRuns = 10
+nepoch = 1000 
 
 for ii in range(1,nRuns+1):
+    
+    model = EGNN(hidden_channels=256, K=2,edge_dimen = edge_dimen).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     
     os.system("python3.10 create_graph_dataset_L.py %s "%(ii))
     train_dataset = torch.load("data/train_cpu.pt", weights_only=False)
@@ -65,13 +74,13 @@ for ii in range(1,nRuns+1):
         results['run'].append(ii)
         results['epoch'].append(epoch)
         t1 = time.time()
-        loss_data = train(model, train_loader,device,criterion,optimizer)
+        loss_data = train(model, train_loader,device,criterion,optimizer,interaction_colors=interaction_colors)
         results['loss'].append(loss_data.detach().cpu().numpy().item())
         tt = round((time.time()-t1)*1000)
         ttt += tt
         t1 = time.time()
-        train_acc = test(model, train_loader,device,criterion,optimizer, show=True, clear=True)
-        test_acc = test(model, test_loader,device,optimizer,criterion, show=True)
+        train_acc = test(model, train_loader,device,criterion,optimizer, show=True, clear=True,interaction_colors=interaction_colors)
+        test_acc = test(model, test_loader,device,optimizer,criterion, show=True,interaction_colors=interaction_colors)
         results['MAE'].append(test_acc.detach().cpu().numpy().item())
         te = round((time.time()-t1)*1000)
         tte += te
@@ -84,7 +93,7 @@ for ii in range(1,nRuns+1):
     print("Best MAE on test", best_test,"at",best_epoch)
     print(f"Total time {round(ttt/1000):04d}s for training, {round(tte/1000):04d}s for testing")
     print(f"Average time per epoch {round(ttt/nepoch):04d}ms for training, {round(tte/nepoch):04d}ms for testing")
-    test(best_model, test_loader,device,criterion,optimizer, show=True)
+    test(best_model, test_loader,device,criterion,optimizer, show=True,interaction_colors=interaction_colors)
     
     plt.ioff()
     plt.show()

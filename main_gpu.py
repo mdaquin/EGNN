@@ -1,11 +1,11 @@
 import sys,os
-from egnn.model_cpu import EGNN
+from egnn.model_gpu import EGNN
 from torch_geometric.loader import DataLoader # type: ignore
 import matplotlib.pyplot as plt
 import torch
 import copy, time
 import pandas as pd
-from train_cpu import train, test 
+from train_gpu import train, test 
 
 
 torch_seed = 42 

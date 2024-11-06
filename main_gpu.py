@@ -37,7 +37,6 @@ else:
     edge_dimen = 4     
 
 
-criterion = torch.nn.L1Loss() 
 
 
 results = {'run': [], 'epoch': [], 'loss': [], 'MAE': []}
@@ -50,6 +49,7 @@ for ii in range(1,nRuns+1):
     model = EGNN(hidden_channels=256, K=2,edge_dimen = edge_dimen).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     
+    criterion = torch.nn.L1Loss() 
     os.system("python3.10 create_graph_dataset_L.py %s "%(ii))
     train_dataset = torch.load("data/train_gpu.pt", weights_only=False)
     min, max = train_dataset.normalise()

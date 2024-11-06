@@ -9,6 +9,11 @@ from torch_geometric.utils.convert import from_networkx
 from egnn.dataset import EGNNDataset 
 import random
 
+torch_seed = 42 
+torch.manual_seed(torch_seed)
+torch.cuda.manual_seed(torch_seed) 
+torch.cuda.manual_seed_all(torch_seed) 
+
 def determine_interaction(metal1, metal2, direction):
     """
     Determines the interaction type based on metal colors, orbitals, and direction.
@@ -112,8 +117,8 @@ def graph_from_line_vec(l, G=None, colors=[]):
                    
                    
                    colIR, colIGreen, colIB, colIG = 1 if interaction_color=="red" else 0, 1 if interaction_color=="green" else 0, 1 if interaction_color=="blue" else 0, 1 if interaction_color=="grey" else 0
-                   G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",
-                              dx=x, dy=y, dz=z,distance=distance,colIR=colIR, colIGreen=colIGreen, colIB=colIB, colIG=colIG, interaction_color=interaction_color)
+                   #G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",dx=x, dy=y, dz=z,distance=distance,colIR=colIR, colIGreen=colIGreen, colIB=colIB, colIG=colIG, interaction_color=interaction_color)
+                   G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",dx=x, dy=y, dz=z,distance=distance,colIR=colIR, colIGreen=colIGreen, colIB=colIB, colIG=colIG, interaction_color=interaction_color)
 
   return G, colors,ng
              
@@ -137,6 +142,11 @@ def displayGraph(G, ng, colors):
 
 
 if __name__ == "__main__":
+    
+    nRand = int(sys.argv[1])
+    print("random_state = %s"%(nRand))
+#    show_graph = sys.argv[2]
+    
     print("*"*6,"loading Data", "*"*6)
     df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
     print("*"*6,"converting to graphs", "*"*6) 
@@ -144,23 +154,26 @@ if __name__ == "__main__":
        
     default_color = 'grey'
     
-    train_df = df.sample(int(len(df)*0.8), random_state=42)
+    train_df = df.sample(int(len(df)*0.8), random_state=nRand)
     test_df = df.drop(train_df.index)
     train_list = []
     for l in train_df.iloc: train_list.append(from_networkx(graph_from_line_vec(l)[0]))
-    # normalise... 
+
     test_list = []
     for l in test_df.iloc: test_list.append(from_networkx(graph_from_line_vec(l)[0]))
     print("*"*6,"saving", "*"*6)
     train = EGNNDataset(train_list)
     test = EGNNDataset(test_list)
-    torch.save(train, "train_vec.pt")
-    torch.save(test, "test_vec.pt")
+    torch.save(train, "data/train_cpu.pt")
+    torch.save(test, "data/test_cpu.pt")
     
-    linenb= random.randint(0,500)
-    #linenb = 0
-    G,colors,ng = graph_from_line_vec(train_df.iloc[linenb])
-    displayGraph(G, ng, colors)
+# =============================================================================
+#     if show_graph == True :
+#         linenb= random.randint(0,500)
+#         G,colors,ng = graph_from_line_vec(train_df.iloc[linenb])
+#         displayGraph(G, ng, colors)
+#         sys.exit(0)
+# =============================================================================
 
     
 

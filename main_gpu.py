@@ -104,3 +104,13 @@ for ii in range(1,nRuns+1):
     plt.show()
 
 df_final = pd.DataFrame(results)
+df_final.to_csv('data_res.csv', index=False)
+fig, ax = plt.subplots(figsize=(10,4))
+plt.title('mae')
+plt.xlabel('Epoch')
+plt.ylabel('MAE')
+for key, grp in df_final.groupby('run'):
+    ax.plot(grp['epoch'], grp['MAE'], label=key)
+
+ax.legend()
+plt.show()

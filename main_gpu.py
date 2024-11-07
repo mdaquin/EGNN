@@ -83,8 +83,8 @@ for ii in range(1,nRuns+1):
         tt = round((time.time()-t1)*1000)
         ttt += tt
         t1 = time.time()
-        train_acc = test(model, train_loader,device,criterion,optimizer, show=True, clear=True,interaction_colors=interaction_colors).to('cuda')
-        test_acc = test(model, test_loader,device,optimizer,criterion, show=True,interaction_colors=interaction_colors).to('cuda')
+        train_acc = test(model, train_loader,device,criterion,optimizer, show=False, clear=True,interaction_colors=interaction_colors).to('cuda')
+        test_acc = test(model, test_loader,device,optimizer,criterion, show=False,interaction_colors=interaction_colors).to('cuda')
         results['MAE'].append(test_acc.detach().cpu().numpy().item())
         te = round((time.time()-t1)*1000)
         tte += te
@@ -99,6 +99,7 @@ for ii in range(1,nRuns+1):
     print(f"Average time per epoch {round(ttt/nepoch):04d}ms for training, {round(tte/nepoch):04d}ms for testing")
     test(best_model, test_loader,device,criterion,optimizer, show=True,interaction_colors=interaction_colors)
     
+    del model 
     plt.ioff()
     plt.show()
 

@@ -5,6 +5,7 @@ torch_seed = 42
 torch.manual_seed(torch_seed)
 torch.cuda.manual_seed(torch_seed) 
 torch.cuda.manual_seed_all(torch_seed) 
+torch.cuda.empty_cache()
 
 def train(model, train_loader,device,criterion,optimizer,interaction_colors=True):
     model.train()
@@ -86,5 +87,6 @@ def test(model, loader, device,criterion,optimizer, show=False, clear=False,inte
          plt.plot([0.0, 1.0], [0.0, 1.0], color="r")
          if not clear: plt.draw()
          if not clear: plt.pause(0.0001)
+     del data, cR, cG, cB, a, x, distance, dx, dy, dz, cIR, cIG, cIB, cIGr 
      return errs.nanmean()
 

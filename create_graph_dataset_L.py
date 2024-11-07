@@ -9,6 +9,7 @@ from torch_geometric.utils.convert import from_networkx
 from egnn.dataset import EGNNDataset 
 import random
 
+torch.cuda.empty_cache()
 torch_seed = 42 
 torch.manual_seed(torch_seed)
 torch.cuda.manual_seed(torch_seed) 
@@ -145,7 +146,6 @@ if __name__ == "__main__":
     
     nRand = int(sys.argv[1])
     print("random_state = %s"%(nRand))
-#    show_graph = sys.argv[2]
     
     print("*"*6,"loading Data", "*"*6)
     df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)

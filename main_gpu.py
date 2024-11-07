@@ -11,8 +11,8 @@ import gc
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
 gc.collect()
 
-torch.cuda.empty_cache()
 torch_seed = 42 
+torch.cuda.empty_cache()
 torch.manual_seed(torch_seed)
 torch.cuda.manual_seed(torch_seed) 
 torch.cuda.manual_seed_all(torch_seed) 
@@ -78,13 +78,13 @@ for ii in range(1,nRuns+1):
         results['run'].append(ii)
         results['epoch'].append(epoch)
         t1 = time.time()
-        loss_data = train(model, train_loader,device,criterion,optimizer,interaction_colors=interaction_colors).to('cuda')
+        loss_data = train(model, train_loader,device,criterion,optimizer,interaction_colors=interaction_colors).to(device)
         results['loss'].append(loss_data.detach().cpu().numpy().item())
         tt = round((time.time()-t1)*1000)
         ttt += tt
         t1 = time.time()
-        train_acc = test(model, train_loader,device,criterion,optimizer, show=False, clear=True,interaction_colors=interaction_colors).to('cuda')
-        test_acc = test(model, test_loader,device,optimizer,criterion, show=False,interaction_colors=interaction_colors).to('cuda')
+        train_acc = test(model, train_loader,device,criterion,optimizer, show=False, clear=True,interaction_colors=interaction_colors).to(device)
+        test_acc = test(model, test_loader,device,optimizer,criterion, show=False,interaction_colors=interaction_colors).to(device)
         results['MAE'].append(test_acc.detach().cpu().numpy().item())
         te = round((time.time()-t1)*1000)
         tte += te

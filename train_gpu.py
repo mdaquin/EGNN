@@ -37,7 +37,7 @@ def train(model, train_loader,device,criterion,optimizer,interaction_colors=True
         loss.backward()  
         optimizer.step()  
         optimizer.zero_grad()
-        
+        del data, cR, cG, cB, a, x, distance, dx, dy, dz, cIR, cIG, cIB, cIGr
     return loss    
    
 def test(model, loader, device,criterion,optimizer, show=False, clear=False,interaction_colors=True):
@@ -88,60 +88,3 @@ def test(model, loader, device,criterion,optimizer, show=False, clear=False,inte
          if not clear: plt.pause(0.0001)
      return errs.nanmean()
 
-# =============================================================================
-# plt.ion()
-# plt.show()
-# torch.cuda.manual_seed(42) 
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-# print("RUNNIN ON", device)
-# 
-# train_dataset = torch.load("data/train_cpu.pt", weights_only=False)
-# min, max = train_dataset.normalise()
-# test_dataset = torch.load("data/test_cpu.pt", weights_only=False)
-# test_dataset.normalise(min, max)
-# 
-# print(f'Number of train graphs: {len(train_dataset)}')
-# print(f'First graph:{train_dataset[0]}')
-# print(f'Number of test graphs: {len(test_dataset)}')
-# print(f'First graph:{test_dataset[0]}')
-# 
-# 
-# #lr=0.00005
-# lr=0.001
-# train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-# test_loader = DataLoader(test_dataset, batch_size=200, shuffle=False)
-# model = EGNN(hidden_channels=256, K=2).to(device)
-# optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-# #criterion = torch.nn.MSELoss()
-# criterion = torch.nn.L1Loss() 
-# 
-# best_test = None 
-# best_epoch = None
-# ttt=0
-# tte=0
-# nepoch = 1000 # in params
-# for epoch in range(1, nepoch+1):
-#     t1 = time.time()
-#     train()
-#     tt = round((time.time()-t1)*1000)
-#     ttt += tt
-#     t1 = time.time()
-#     train_acc = test(model, train_loader, show=True, clear=True)
-#     test_acc = test(model, test_loader, show=True)
-#     te = round((time.time()-t1)*1000)
-#     tte += te
-#     if best_test is None or test_acc < best_test:
-#         best_test = test_acc
-#         best_model = copy.deepcopy(model)
-#         best_epoch = epoch
-#     print(f'Epoch: {epoch:03d} ({tt:04d}/{te:04d}), Train MAE: {train_acc:.4f}, Test MAE: {test_acc:.4f} (best: {best_test:.4f})')
-# 
-# print("Best MAE on test", best_test,"at",best_epoch)
-# print(f"Total time {round(ttt/1000):04d}s for training, {round(tte/1000):04d}s for testing")
-# print(f"Average time per epoch {round(ttt/nepoch):04d}ms for training, {round(tte/nepoch):04d}ms for testing")
-# test(best_model, test_loader, show=True)
-# 
-# plt.ioff()
-# plt.show()
-# 
-# =============================================================================

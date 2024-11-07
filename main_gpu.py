@@ -49,7 +49,6 @@ nRuns = 10
 nepoch = 1000 
 
 for ii in range(1,nRuns+1):
-    torch.cuda.empty_cache()
     model = EGNN(hidden_channels=256, K=2,edge_dimen = edge_dimen).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.L1Loss() 
@@ -100,6 +99,7 @@ for ii in range(1,nRuns+1):
     test(best_model, test_loader,device,criterion,optimizer, show=True,interaction_colors=interaction_colors)
     
     del model 
+    torch.cuda.empty_cache()
     plt.ioff()
     plt.show()
 

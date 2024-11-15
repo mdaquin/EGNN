@@ -40,8 +40,20 @@ if interaction_colors == True:
 else:
     edge_dimen = 4     
 
+input_features = 4 # Default due to 
 
+add_Fatom = True
+add_Katom = True
 
+if add_Fatom == True and add_Katom == True:
+    input_features = input_features + 2 
+elif add_Fatom == True and add_Katom == False:
+    input_features = input_features + 1 
+elif add_Fatom == False and add_Katom == True:
+    input_features = input_features + 1 
+elif add_Fatom == False and add_Katom == False:
+    input_features = input_features  
+    
 
 results = {'run': [], 'epoch': [], 'loss': [], 'MAE': []}
 
@@ -49,7 +61,7 @@ nRuns = 10
 nepoch = 1000 
 
 for ii in range(1,nRuns+1):
-    model = EGNN(hidden_channels=256, K=2,edge_dimen = edge_dimen).to(device)
+    model = EGNN(input_features=input_features, hidden_channels=256, K=2,edge_dimen = edge_dimen).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.L1Loss() 
 
@@ -98,7 +110,7 @@ for ii in range(1,nRuns+1):
     print(f"Average time per epoch {round(ttt/nepoch):04d}ms for training, {round(tte/nepoch):04d}ms for testing")
     test(best_model, test_loader,device,criterion,optimizer, show=True,interaction_colors=interaction_colors)
     
-    del model 
+    del model
     torch.cuda.empty_cache()
     plt.ioff()
     plt.show()

@@ -11,9 +11,9 @@ from torch_geometric.data.data import Data
 # TODO: try other aggregations / pooling
 # TODO: #2 try layers with edge attributes (and direction on edges?)
 class EGNN(Module):
-    def __init__(self, hidden_channels=16, K=3,edge_dimen=4):
+    def __init__(self, input_features=4, hidden_channels=16, K=3,edge_dimen=4):
         super(EGNN, self).__init__()
-        self.conv1 = GATv2Conv(4, hidden_channels, add_self_loops=False, edge_dim=edge_dimen, heads=3) 
+        self.conv1 = GATv2Conv(input_features, hidden_channels, add_self_loops=False, edge_dim=edge_dimen, heads=3) 
         self.conv11 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=edge_dimen, heads=3) 
         self.conv12 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=edge_dimen, heads=3) 
         self.conv2 = GCNConv(3*hidden_channels, hidden_channels, add_self_loops=False) #, edge_dim=4) 

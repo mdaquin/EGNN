@@ -35,15 +35,17 @@ batch_size_test  = 200
 
 interaction_colors = True 
 
+add_Fatom = False
+add_Katom = False
+
+input_features = 4 
+
+
 if interaction_colors == True:
     edge_dimen = 8
 else:
     edge_dimen = 4     
 
-input_features = 4 # Default due to 
-
-add_Fatom = True
-add_Katom = True
 
 if add_Fatom == True and add_Katom == True:
     input_features = input_features + 3
@@ -57,7 +59,7 @@ elif add_Fatom == False and add_Katom == False:
 
 results = {'run': [], 'epoch': [], 'loss': [], 'MAE': []}
 
-nRuns = 10
+nRuns = 1
 nepoch = 1000 
 
 for ii in range(1,nRuns+1):
@@ -65,7 +67,7 @@ for ii in range(1,nRuns+1):
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.L1Loss() 
 
-    os.system("python3.10 create_graph_dataset_L.py %s "%(ii))
+    os.system("python3.10 create_graph_dataset_L.py %s %s %s"%(ii,add_Fatom,add_Katom)) # nRand, Fatom
     train_dataset = torch.load("data/train_gpu.pt", weights_only=False)
     min, max = train_dataset.normalise()
     test_dataset = torch.load("data/test_gpu.pt", weights_only=False)
@@ -89,13 +91,13 @@ for ii in range(1,nRuns+1):
         results['run'].append(ii)
         results['epoch'].append(epoch)
         t1 = time.time()
-        loss_data = train(model, train_loader,device,criterion,optimizer,interaction_colors=interaction_colors).to(device)
+        loss_data = train(model, train_loader,device,criterion,optimizer,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
         results['loss'].append(loss_data.detach().cpu().numpy().item())
         tt = round((time.time()-t1)*1000)
         ttt += tt
         t1 = time.time()
-        train_acc = test(model, train_loader,device,criterion,optimizer, show=False, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
-        test_acc = test(model, test_loader,device,optimizer,criterion, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        train_acc = test(model, train_loader,device,criterion,optimizer, show=True, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        test_acc = test(model, test_loader,device,optimizer,criterion, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
         results['MAE'].append(test_acc.detach().cpu().numpy().item())
         te = round((time.time()-t1)*1000)
         tte += te

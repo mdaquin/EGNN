@@ -17,12 +17,6 @@ def train(model, train_loader,device,criterion,optimizer,interaction_colors=True
         a = data.atom.view(data.atom.size(0), -1)
         
         
-        
-        distance=data.distance.to(torch.float).view(len(data.distance), -1)
-        dx = data.dx.to(torch.float).view(len(data.dx), -1)
-        dy = data.dy.to(torch.float).view(len(data.dy), -1)
-        dz = data.dz.to(torch.float).view(len(data.dz), -1)
-        
         if add_Fatom == True and add_Katom == True: 
             f = data.fluoride.view(data.fluoride.size(0), -1)
             m = data.metal.view(data.metal.size(0), -1)
@@ -41,12 +35,18 @@ def train(model, train_loader,device,criterion,optimizer,interaction_colors=True
             
         x = x.to(device)#.cuda()
         
+        distance=data.distance.to(torch.float).view(len(data.distance), -1)
+        dx = data.dx.to(torch.float).view(len(data.dx), -1)
+        dy = data.dy.to(torch.float).view(len(data.dy), -1)
+        dz = data.dz.to(torch.float).view(len(data.dz), -1)
+        
         if interaction_colors == True:
             cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
             cIG = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
             cIB = data.colIB.to(torch.float).view(len(data.colIB), -1)
             cIGr = data.colIG.to(torch.float).view(len(data.colIG), -1)
             edAtt = torch.hstack((distance, dx, dy, dz,cIR,cIG,cIB,cIGr)).to(torch.float32)
+            del cIR, cIG, cIB, cIGr
         else:
             edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
         out = model(x, data.edge_index, data.batch, edAtt).to(device)#.cuda() 
@@ -55,7 +55,7 @@ def train(model, train_loader,device,criterion,optimizer,interaction_colors=True
         loss.backward()  
         optimizer.step()  
         optimizer.zero_grad()
-        del data, cR, cG, cB, a, x, distance, dx, dy, dz, cIR, cIG, cIB, cIGr
+        del data, cR, cG, cB, a, x, distance, dx, dy, dz
     return loss    
    
 def test(model, loader, device,criterion,optimizer, show=False, clear=False,interaction_colors=True, add_Fatom =False, add_Katom = False):
@@ -68,11 +68,6 @@ def test(model, loader, device,criterion,optimizer, show=False, clear=False,inte
          cG = data.colG.view(data.colG.size(0), -1)
          cB = data.colB.view(data.colB.size(0), -1)
          a = data.atom.view(data.atom.size(0), -1)
-         
-         distance=data.distance.to(torch.float).view(len(data.distance), -1)
-         dx = data.dx.to(torch.float).view(len(data.dx), -1)
-         dy = data.dy.to(torch.float).view(len(data.dy), -1)
-         dz = data.dz.to(torch.float).view(len(data.dz), -1)
          
          if add_Fatom == True and add_Katom == True: 
              f = data.fluoride.view(data.fluoride.size(0), -1)
@@ -92,12 +87,18 @@ def test(model, loader, device,criterion,optimizer, show=False, clear=False,inte
              
          x = x.to(device)#.cuda()
          
+         distance=data.distance.to(torch.float).view(len(data.distance), -1)
+         dx = data.dx.to(torch.float).view(len(data.dx), -1)
+         dy = data.dy.to(torch.float).view(len(data.dy), -1)
+         dz = data.dz.to(torch.float).view(len(data.dz), -1)
+         
          if interaction_colors == True:
              cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
              cIG = data.colIGreen.to(torch.float).view(len(data.colIGreen), -1)
              cIB = data.colIB.to(torch.float).view(len(data.colIB), -1)
              cIGr = data.colIG.to(torch.float).view(len(data.colIG), -1)
              edAtt = torch.hstack((distance, dx, dy, dz,cIR,cIG,cIB,cIGr)).to(torch.float32)
+             del  cIR, cIG, cIB, cIGr
          else:
              edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
          
@@ -119,6 +120,6 @@ def test(model, loader, device,criterion,optimizer, show=False, clear=False,inte
          plt.plot([0.0, 1.0], [0.0, 1.0], color="r")
          if not clear: plt.draw()
          if not clear: plt.pause(0.0001)
-     del data, cR, cG, cB, a, x, distance, dx, dy, dz, cIR, cIG, cIB, cIGr 
+     del data, cR, cG, cB, a, x, distance, dx, dy, dz 
      return errs.nanmean()
 

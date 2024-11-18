@@ -74,7 +74,7 @@ def distMM(nbm1, nbm2, a, b, c):
     return dist(met1[0], met1[1], met1[2], met2[0], met2[1], met2[2], a, b, c)
 
 
-def add_fluorine_metaal_connection (G,l,default_colorFM='black'):
+def add_fluorine_metal_connection (G,l,ng,default_colorFM='black'):
     G.add_edge(f"{ng}_M1", f"{ng}_F9" ,
            dx=1, dy=0, dz=0,
            distance=np.round(distMK(1,0.25+l["M1 shift xF9" ]*0.0001,0,0,l["a"],l["b"],l["c"]),3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_colorFM)
@@ -150,7 +150,7 @@ def add_fluorine_metaal_connection (G,l,default_colorFM='black'):
                distance=np.round(distMK(7,0.5,0.5,0.25+l["M6 shift zF18"]*0.0001,l["a"],l["b"],l["c"]),3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_colorFM)
 
 
-def add_fluorine_potasium_connection(G,l,default_colorFK='black') :
+def add_fluorine_potasium_connection(G,l,ng,default_colorFK='black') :
       kx,ky,kz = (0.25+(l["K shift x"]*0.001)),(0.25+(l["K shift y"]*0.001)),(0.25+(l["K shift z"]*0.001))
       G.add_edge(f"{ng}_F9", f"{ng}_K",
              dx=0, dy=0, dz=0,
@@ -202,38 +202,6 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
       colR, colG, colB = 1 if col=="r" else 0, 1 if col=="v" else 0, 1 if col=="b" else 0
       G.add_node(f"{ng}_M{i}", colR=colR, colG=colG, colB=colB, atom=l["Z"], metal=1, fluoride=0, potassium=0) 
       colors.append(col if col != "v" else "g")
-      
-  if add_Katom == False:
-      if add_Fatom == False:
-          pass   
-      elif add_Fatom == True:               
-          for i in range(9,21):
-                G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9, metal=0, fluoride=1,colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color) 
-                colors.append("lightgrey")
-          add_fluorine_metaal_connection(G,l)
-          
-  else:
-      kx,ky,kz = (0.25+(l["K shift x"]*0.001)),(0.25+(l["K shift y"]*0.001)),(0.25+(l["K shift z"]*0.001))
-      if add_Fatom == False:
-          G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19, metal=0, potassium=1)
-          colors.append("lightgrey")
-          for i in range(1,9):
-              G.add_edge(f"{ng}_M{i}", f"{ng}_K",
-                 dx=0, dy=0, dz=0,
-                 distance=np.round(distMK(i, kx, ky, kz, l["a"], l["b"], l["c"]),3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color)
-      else:
-        for i in range(9,21):
-            G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9, metal=0, fluoride=1, potassium=0,colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color) 
-            colors.append("lightgrey")
-        G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19, metal=0, fluoride=0, potassium=1,colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color) 
-        colors.append("lightgrey")
-        add_fluorine_metaal_connection(G,l)
-        add_fluorine_potasium_connection(G,l)
-        
-          
-  
-    
-  for i in range(1,9):
       for j in range(i+1,9):
                distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]),3)
                if distance <= cutoff_distance:
@@ -264,32 +232,43 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
                    
                    
                    colIR, colIGreen, colIB, colIG = 1 if interaction_color=="red" else 0, 1 if interaction_color=="green" else 0, 1 if interaction_color=="blue" else 0, 1 if interaction_color=="grey" else 0
-                   #G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",dx=x, dy=y, dz=z,distance=distance,colIR=colIR, colIGreen=colIGreen, colIB=colIB, colIG=colIG, interaction_color=interaction_color)
                    G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",dx=x, dy=y, dz=z,distance=distance,colIR=colIR, colIGreen=colIGreen, colIB=colIB, colIG=colIG, interaction_color=interaction_color)
 
+  if add_Katom == False:
+      if add_Fatom == False:
+          pass   
+      elif add_Fatom == True:               
+          for i in range(9,21):
+                G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9, metal=0, fluoride=1, potassium=0) 
+                colors.append("lightgrey")
+          add_fluorine_metal_connection(G,l,ng)
+          
+          
+  else:
+      kx,ky,kz = (0.25+(l["K shift x"]*0.001)),(0.25+(l["K shift y"]*0.001)),(0.25+(l["K shift z"]*0.001))
+      
+      
+      if add_Fatom == False:
+          G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19, metal=0, fluoride=0, potassium=1)
+          colors.append("lightgrey")
+          for i in range(1,9):
+              G.add_edge(f"{ng}_M{i}", f"{ng}_K",
+                 dx=0, dy=0, dz=0,
+                 distance=np.round(distMK(i, kx, ky, kz, l["a"], l["b"], l["c"]),3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color)
+      else:
+        for i in range(9,21):
+            G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9, metal=0, fluoride=1, potassium=0) 
+            colors.append("lightgrey")
+        G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19, metal=0, fluoride=0, potassium=1) 
+        colors.append("lightgrey")
+        add_fluorine_metal_connection(G,l,ng)
+        add_fluorine_potasium_connection(G,l,ng)
+      
+
+      
   return G, colors,ng
              
   
-
-
-def displayGraph2(G, ng, colors):
-    pos = {f"{ng}_M1": (-0.5, -0.5), f"{ng}_M2": (-0.5, 1), f"{ng}_M3": (1, -0.5), f"{ng}_M4": (1, 1),
-           f"{ng}_M5": (-1, -1), f"{ng}_M6": (-1, 0.5), f"{ng}_M7": (0.5, -1), f"{ng}_M8": (0.5, 0.5),
-           f"{ng}_F9": (-0.75, -0.75), f"{ng}_F10": (0.25, -0.5), f"{ng}_F11": (-0.5, 0.25),
-           f"{ng}_F12": (-0.25, -1), f"{ng}_F13": (-1, -0.25), f"{ng}_F14": (1, 0.25),
-           f"{ng}_F15": (0.75, -0.75), f"{ng}_F16": (-0.75, 0.75), f"{ng}_F17": (0.25, 1),
-           f"{ng}_F18": (0.5, -0.25), f"{ng}_F19": (-0.25, 0.5), f"{ng}_F20": (0.75, 0.75),
-           f"{ng}_K": (0,0)}
-    plt.figure(figsize=(8,8))
-     
-    edge_colors = [G.edges[u, v]['interaction_color'] for u, v in G.edges()]
-    nx.draw(G, with_labels=True, node_size=1000, node_color=colors, pos=pos,edge_color=edge_colors)
-
-    #nx.draw(G, with_labels=True, node_size=1000, node_color=colors, pos=pos) # Use node_colors instead of colors
-    edge_labels = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=nx.get_edge_attributes(G, "distance"))
-    node_labels = nx.draw_networkx_labels(G, pos=pos)#, labels=nx.get_node_attributes(G, "atom"))
-    plt.show()
-
 
 def displayGraph(G, ng, colors):
     pos = {f"{ng}_M1": (-0.5, -0.5), f"{ng}_M2": (-0.5, 1), f"{ng}_M3": (1, -0.5), f"{ng}_M4": (1, 1),
@@ -315,22 +294,27 @@ def displayGraph(G, ng, colors):
 if __name__ == "__main__":
     
     nRand = int(sys.argv[1])
+    add_Fatom = (sys.argv[2])
+    add_Katom = (sys.argv[3])
+    
     print("random_state = %s"%(nRand))
+    print("Fatom=%s"%(add_Fatom))
+    print("Katom=%s"%(add_Katom))
     
     print("*"*6,"loading Data", "*"*6)
     df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
     print("*"*6,"converting to graphs", "*"*6) 
     df["dE scaled"] = ((df["dE scaled"] - df["dE scaled"].min()) / (df["dE scaled"].max()-df["dE scaled"].min()))
        
-    default_color = 'grey'
+    default_color = 'black'
     
     train_df = df.sample(int(len(df)*0.8), random_state=nRand)
     test_df = df.drop(train_df.index)
     train_list = []
-    for l in train_df.iloc: train_list.append(from_networkx(graph_from_line_vec(l)[0]))
+    for l in train_df.iloc: train_list.append(from_networkx(graph_from_line_vec(l,default_color=default_color,add_Katom = add_Katom, add_Fatom = add_Fatom)[0]))
 
     test_list = []
-    for l in test_df.iloc: test_list.append(from_networkx(graph_from_line_vec(l)[0]))
+    for l in test_df.iloc: test_list.append(from_networkx(graph_from_line_vec(l,default_color=default_color,add_Katom = add_Katom, add_Fatom = add_Fatom)[0]))
     print("*"*6,"saving", "*"*6)
     train = EGNNDataset(train_list)
     test = EGNNDataset(test_list)

@@ -1,22 +1,18 @@
 import torch
 from torch.nn import Linear, Module
 import torch.nn.functional as F
-from torch_geometric.nn import GCNConv, ChebConv, SimpleConv, GraphConv, GATConv, GATv2Conv
-from torch_geometric.nn import global_mean_pool, global_add_pool, global_max_pool, global_sort_pool, EdgePooling
-from torch_geometric.nn import max_pool_neighbor_x, avg_pool_neighbor_x
+from torch_geometric.nn import GCNConv, GATv2Conv
+from torch_geometric.nn import global_max_pool
+from torch_geometric.nn import max_pool_neighbor_x
 from torch_geometric.data.data import Data 
 
-# TODO: make it so that the node features are 1 vector
-# TODO: figure out how to decide on nb channels
-# TODO: try other aggregations / pooling
-# TODO: #2 try layers with edge attributes (and direction on edges?)
 class EGNN(Module):
     def __init__(self, input_features=4, hidden_channels=16, K=3,edge_dimen=4):
         super(EGNN, self).__init__()
         self.conv1 = GATv2Conv(input_features, hidden_channels, add_self_loops=False, edge_dim=edge_dimen, heads=3) 
         self.conv11 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=edge_dimen, heads=3) 
         self.conv12 = GATv2Conv(3*hidden_channels, hidden_channels, add_self_loops=False, edge_dim=edge_dimen, heads=3) 
-        self.conv2 = GCNConv(3*hidden_channels, hidden_channels, add_self_loops=False) #, edge_dim=4) 
+        self.conv2 = GCNConv(3*hidden_channels, hidden_channels, add_self_loops=False)  
     
         self.lin1 = Linear(hidden_channels, hidden_channels)
         self.lin2 = Linear(hidden_channels, hidden_channels)
@@ -32,11 +28,11 @@ class EGNN(Module):
         x = self.conv12(x, edge_index, edge_attr=edge_attr)
         x = x.relu()
 
-        d = max_pool_neighbor_x(Data(x, edge_index)) # TODO : can pooling take into account edge attributes?
+        d = max_pool_neighbor_x(Data(x, edge_index)) 
         x = d.x
         edge_index = d.edge_index
         res = x
-        x = self.conv2(x, edge_index) #, edge_attr=edge_attr) # (weights/attr are lost in pooling?)
+        x = self.conv2(x, edge_index)
         x = x.relu()
 
         x = global_max_pool(x, batch) 

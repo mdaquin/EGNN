@@ -7,6 +7,23 @@ torch.cuda.manual_seed(torch_seed)
 torch.cuda.manual_seed_all(torch_seed) 
 torch.cuda.empty_cache()
 
+
+def sizeofmodel (add_Fatom,add_Katom,interaction_colors,input_features = 4):     
+    if interaction_colors == True:
+        edge_dimen = 8
+    else:
+        edge_dimen = 4     
+
+    if add_Fatom == True and add_Katom == True:
+        input_features = input_features + 3
+    elif add_Fatom == True and add_Katom == False:
+        input_features = input_features + 2 
+    elif add_Fatom == False and add_Katom == True:
+        input_features = input_features + 2 
+    elif add_Fatom == False and add_Katom == False:
+        input_features = input_features  
+    return edge_dimen, input_features     
+
 def train(model, train_loader,device,criterion,optimizer,interaction_colors=True, add_Fatom =False, add_Katom = False):
     model.train()
     for data in train_loader:  # Iterate in batches over the training dataset.

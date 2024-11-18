@@ -5,8 +5,16 @@ import matplotlib.pyplot as plt
 import torch
 import copy, time
 import pandas as pd
-from train_gpu import train, test 
+from train_gpu import train, test, sizeofmodel 
 import gc
+import json,sys
+
+
+
+if len(sys.argv) != 2:
+   print("please provide a config file")
+   sys.exit(-1)
+
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
 gc.collect()
@@ -27,47 +35,32 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
 
+with open(sys.argv[1]) as f:
+   params = json.load(f)
 
 
-learning_rate    = 0.001
-batch_size_train = 64
-batch_size_test  = 200   
+interaction_colors = params['interaction_colors']   
+learning_rate      = params['learning_rate']
+batch_size_train   = params['batch_size_train']
+batch_size_test    = params['batch_size_test']   
+add_Fatom          = params['add_Fatom']
+add_Katom          = params['add_Katom']
+hidden_channels    = params['hidden_channels']
+nRuns              = params['Number_of_RUNS']
+nepoch             = params['Epochs']
 
-interaction_colors = True 
-
-add_Fatom = False
-add_Katom = False
-
-input_features = 4 
-
-
-if interaction_colors == True:
-    edge_dimen = 8
-else:
-    edge_dimen = 4     
-
-
-if add_Fatom == True and add_Katom == True:
-    input_features = input_features + 3
-elif add_Fatom == True and add_Katom == False:
-    input_features = input_features + 2 
-elif add_Fatom == False and add_Katom == True:
-    input_features = input_features + 2 
-elif add_Fatom == False and add_Katom == False:
-    input_features = input_features  
+edge_dimen,input_features = sizeofmodel (add_Fatom,add_Katom,interaction_colors)
     
 
 results = {'run': [], 'epoch': [], 'loss': [], 'MAE': []}
 
-nRuns = 1
-nepoch = 1000 
 
 for ii in range(1,nRuns+1):
-    model = EGNN(input_features=input_features, hidden_channels=256, K=2,edge_dimen = edge_dimen).to(device)
+    model = EGNN(input_features=input_features, hidden_channels=hidden_channels, K=2,edge_dimen = edge_dimen).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.L1Loss() 
 
-    os.system("python3.10 create_graph_dataset_L.py %s %s %s"%(ii,add_Fatom,add_Katom)) # nRand, Fatom
+    os.system("python3.10 create_graph_dataset_L.py %s %s %s"%(ii,add_Fatom,add_Katom)) 
     train_dataset = torch.load("data/train_gpu.pt", weights_only=False)
     min, max = train_dataset.normalise()
     test_dataset = torch.load("data/test_gpu.pt", weights_only=False)
@@ -96,8 +89,8 @@ for ii in range(1,nRuns+1):
         tt = round((time.time()-t1)*1000)
         ttt += tt
         t1 = time.time()
-        train_acc = test(model, train_loader,device,criterion,optimizer, show=True, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
-        test_acc = test(model, test_loader,device,optimizer,criterion, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        train_acc = test(model, train_loader,device,criterion,optimizer, show=False, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        test_acc = test(model, test_loader,device,optimizer,criterion, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
         results['MAE'].append(test_acc.detach().cpu().numpy().item())
         te = round((time.time()-t1)*1000)
         tte += te

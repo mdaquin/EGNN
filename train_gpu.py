@@ -7,7 +7,7 @@ torch.cuda.manual_seed(torch_seed)
 torch.cuda.manual_seed_all(torch_seed) 
 torch.cuda.empty_cache()
 
-def train(model, train_loader,device,criterion,optimizer,interaction_colors=True):
+def train(model, train_loader,device,criterion,optimizer,interaction_colors=True, add_Fatom =False, add_Katom = False):
     model.train()
     for data in train_loader:  # Iterate in batches over the training dataset.
         data = data.to(device)#.cuda()  
@@ -16,13 +16,30 @@ def train(model, train_loader,device,criterion,optimizer,interaction_colors=True
         cB = data.colB.view(data.colB.size(0), -1)
         a = data.atom.view(data.atom.size(0), -1)
         
-        x = torch.hstack((cR,cG,cB,a)).to(torch.float32)
-        x = x.to(device)#.cuda()
+        
         
         distance=data.distance.to(torch.float).view(len(data.distance), -1)
         dx = data.dx.to(torch.float).view(len(data.dx), -1)
         dy = data.dy.to(torch.float).view(len(data.dy), -1)
         dz = data.dz.to(torch.float).view(len(data.dz), -1)
+        
+        if add_Fatom == True and add_Katom == True: 
+            f = data.fluoride.view(data.fluoride.size(0), -1)
+            m = data.metal.view(data.metal.size(0), -1)
+            k = data.potassium.view(data.potassium.size(0), -1)
+            x = torch.hstack((cR,cG,cB,a,f,m,k)).to(torch.float32)
+        if add_Fatom == False and add_Katom == True: 
+            m = data.metal.view(data.metal.size(0), -1)
+            k = data.potassium.view(data.potassium.size(0), -1)
+            x = torch.hstack((cR,cG,cB,a,m,k)).to(torch.float32)
+        if add_Fatom == True and add_Katom == False: 
+            f = data.fluoride.view(data.fluoride.size(0), -1)
+            m = data.metal.view(data.metal.size(0), -1)
+            x = torch.hstack((cR,cG,cB,a,f,m)).to(torch.float32)
+        if add_Fatom == False and add_Katom == False: 
+            x = torch.hstack((cR,cG,cB,a)).to(torch.float32)    
+            
+        x = x.to(device)#.cuda()
         
         if interaction_colors == True:
             cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)
@@ -41,7 +58,7 @@ def train(model, train_loader,device,criterion,optimizer,interaction_colors=True
         del data, cR, cG, cB, a, x, distance, dx, dy, dz, cIR, cIG, cIB, cIGr
     return loss    
    
-def test(model, loader, device,criterion,optimizer, show=False, clear=False,interaction_colors=True):
+def test(model, loader, device,criterion,optimizer, show=False, clear=False,interaction_colors=True, add_Fatom =False, add_Katom = False):
      model.eval()
      errs = None
      if show: toshow = None
@@ -52,13 +69,28 @@ def test(model, loader, device,criterion,optimizer, show=False, clear=False,inte
          cB = data.colB.view(data.colB.size(0), -1)
          a = data.atom.view(data.atom.size(0), -1)
          
-
-         x = torch.hstack((cR,cG,cB,a)).to(torch.float32)
-         x = x.to(device)#.cuda()
          distance=data.distance.to(torch.float).view(len(data.distance), -1)
          dx = data.dx.to(torch.float).view(len(data.dx), -1)
          dy = data.dy.to(torch.float).view(len(data.dy), -1)
          dz = data.dz.to(torch.float).view(len(data.dz), -1)
+         
+         if add_Fatom == True and add_Katom == True: 
+             f = data.fluoride.view(data.fluoride.size(0), -1)
+             m = data.metal.view(data.metal.size(0), -1)
+             k = data.potassium.view(data.potassium.size(0), -1)
+             x = torch.hstack((cR,cG,cB,a,f,m,k)).to(torch.float32)
+         if add_Fatom == False and add_Katom == True: 
+             m = data.metal.view(data.metal.size(0), -1)
+             k = data.potassium.view(data.potassium.size(0), -1)
+             x = torch.hstack((cR,cG,cB,a,m,k)).to(torch.float32)
+         if add_Fatom == True and add_Katom == False: 
+             f = data.fluoride.view(data.fluoride.size(0), -1)
+             m = data.metal.view(data.metal.size(0), -1)
+             x = torch.hstack((cR,cG,cB,a,f,m)).to(torch.float32)
+         if add_Fatom == False and add_Katom == False: 
+             x = torch.hstack((cR,cG,cB,a)).to(torch.float32)    
+             
+         x = x.to(device)#.cuda()
          
          if interaction_colors == True:
              cIR = data.colIR.to(torch.float).view(len(data.colIR), -1)

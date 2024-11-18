@@ -46,11 +46,11 @@ add_Fatom = True
 add_Katom = True
 
 if add_Fatom == True and add_Katom == True:
-    input_features = input_features + 2 
+    input_features = input_features + 3
 elif add_Fatom == True and add_Katom == False:
-    input_features = input_features + 1 
+    input_features = input_features + 2 
 elif add_Fatom == False and add_Katom == True:
-    input_features = input_features + 1 
+    input_features = input_features + 2 
 elif add_Fatom == False and add_Katom == False:
     input_features = input_features  
     
@@ -94,8 +94,8 @@ for ii in range(1,nRuns+1):
         tt = round((time.time()-t1)*1000)
         ttt += tt
         t1 = time.time()
-        train_acc = test(model, train_loader,device,criterion,optimizer, show=False, clear=True,interaction_colors=interaction_colors).to(device)
-        test_acc = test(model, test_loader,device,optimizer,criterion, show=False,interaction_colors=interaction_colors).to(device)
+        train_acc = test(model, train_loader,device,criterion,optimizer, show=False, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        test_acc = test(model, test_loader,device,optimizer,criterion, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
         results['MAE'].append(test_acc.detach().cpu().numpy().item())
         te = round((time.time()-t1)*1000)
         tte += te

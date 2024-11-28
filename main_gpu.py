@@ -84,13 +84,13 @@ for ii in range(1,nRuns+1):
         results['run'].append(ii)
         results['epoch'].append(epoch)
         t1 = time.time()
-        loss_data = train(model, train_loader,device,criterion,optimizer,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        loss_data = train(model, train_loader,device,criterion,optimizer, min, max,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
         results['loss'].append(loss_data.detach().cpu().numpy().item())
         tt = round((time.time()-t1)*1000)
         ttt += tt
         t1 = time.time()
-        train_acc = test(model, train_loader,device,criterion,optimizer, show=False, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
-        test_acc = test(model, test_loader,device,optimizer,criterion, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        train_acc = test(model, train_loader,device,criterion,optimizer, min, max, show=False, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        test_acc = test(model, test_loader,device,criterion, optimizer, min, max, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
         results['MAE'].append(test_acc.detach().cpu().numpy().item())
         te = round((time.time()-t1)*1000)
         tte += te
@@ -103,7 +103,7 @@ for ii in range(1,nRuns+1):
     print("Best MAE on test", best_test,"at",best_epoch)
     print(f"Total time {round(ttt/1000):04d}s for training, {round(tte/1000):04d}s for testing")
     print(f"Average time per epoch {round(ttt/nepoch):04d}ms for training, {round(tte/nepoch):04d}ms for testing")
-    test(best_model, test_loader,device,criterion,optimizer, show=True,interaction_colors=interaction_colors)
+    test(best_model, test_loader,device,criterion,optimizer, min, max, show=True,interaction_colors=interaction_colors)
     
     del model
     torch.cuda.empty_cache()
@@ -111,7 +111,7 @@ for ii in range(1,nRuns+1):
     plt.show()
 
 df_final = pd.DataFrame(results)
-df_final.to_csv('data_res.csv', index=False)
+#df_final.to_csv('data_res.csv', index=False)
 fig, ax = plt.subplots(figsize=(10,4))
 plt.title('mae')
 plt.xlabel('Epoch')

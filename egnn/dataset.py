@@ -22,3 +22,5 @@ class EGNNDataset(Dataset):
                           nv = (k[1] - min[k[0]]) / (max[k[0]]-min[k[0]])
                           g.update({k[0]: nv})
         return min,max
+
+

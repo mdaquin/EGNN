@@ -1,11 +1,19 @@
 import torch
 import matplotlib.pyplot as plt
+import copy
 
 torch_seed = 42 
 torch.manual_seed(torch_seed)
 torch.cuda.manual_seed(torch_seed) 
 torch.cuda.manual_seed_all(torch_seed) 
 torch.cuda.empty_cache()
+
+
+
+def denormalize(value, key, min_dict, max_dict):
+    return value * (max_dict[key] - min_dict[key] + 1e-8) + min_dict[key]
+
+    
 
 
 def sizeofmodel (add_Fatom,add_Katom,interaction_colors,input_features = 4):     
@@ -24,7 +32,7 @@ def sizeofmodel (add_Fatom,add_Katom,interaction_colors,input_features = 4):
         input_features = input_features  
     return edge_dimen, input_features     
 
-def train(model, train_loader,device,criterion,optimizer,interaction_colors=True, add_Fatom =False, add_Katom = False):
+def train(model, train_loader,device,criterion,optimizer, min_values, max_values,interaction_colors=True, add_Fatom =False, add_Katom = False):
     model.train()
     for data in train_loader:  # Iterate in batches over the training dataset.
         data = data.to(device)#.cuda()  
@@ -68,14 +76,17 @@ def train(model, train_loader,device,criterion,optimizer,interaction_colors=True
             edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
         out = model(x, data.edge_index, data.batch, edAtt).to(device)#.cuda() 
         real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1)
-        loss = criterion(out, real)  # Compute the loss.
+        real_dn = real #denormalize(real,'dE_scaled', min_values, max_values, inplace=False)
+        out_dn =  out #denormalize(out,'dE_scaled', min_values, max_values, inplace=False)
+        
+        loss = criterion(out_dn, real_dn)  # Compute the loss.
         loss.backward()  
         optimizer.step()  
         optimizer.zero_grad()
         del data, cR, cG, cB, a, x, distance, dx, dy, dz
     return loss    
    
-def test(model, loader, device,criterion,optimizer, show=False, clear=False,interaction_colors=True, add_Fatom =False, add_Katom = False):
+def test(model, loader, device,criterion,optimizer, min_values, max_values, show=False, clear=False,interaction_colors=True, add_Fatom =False, add_Katom = False):
      model.eval()
      errs = None
      if show: toshow = None
@@ -122,12 +133,16 @@ def test(model, loader, device,criterion,optimizer, show=False, clear=False,inte
          
          out = model(x, data.edge_index, data.batch, edAtt).detach()
          real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1).detach()
-         err = (real-out).abs()
+         
+         real_dn = real #denormalize(real,'dE_scaled', min_values, max_values, inplace=False)
+         out_dn =  out#denormalize(out,'dE_scaled', min_values, max_values, inplace=False)
+         
+         err = (real_dn-out_dn).abs()
          if errs is None: errs = err
          else: errs = torch.vstack((errs, err))
          if show:
-             if toshow is None: toshow = torch.hstack((real,out)).cpu()
-             else: toshow = torch.vstack((toshow.to(device), torch.hstack((real, out)))).cpu()
+             if toshow is None: toshow = torch.hstack((real_dn,out_dn)).cpu()
+             else: toshow = torch.vstack((toshow.to(device), torch.hstack((real_dn, out_dn)))).cpu()
 
      if show: 
 

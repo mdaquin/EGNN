@@ -12,13 +12,13 @@ EGNN is designed for the task of predicting molecular interaction energies based
 The model is designed to predict the interaction energy of a molecule using a graph-based representation, with the following key features:
 
 **Node Features:**
-- Atomic Properties (e.g., atom, metal, fluoride, potassium)
-- Color Features (e.g., colR, colG, colB for red, green, and blue)
-- Position Features (e.g., dx, dy, dz for position offsets)
+- Atomic Properties (e.g., *atom*, *metal*, *fluoride*, *potassium*)
+- Color Features (e.g., *colR*, *colG*, *colB* for red, green, and blue)
+- Position Features (e.g., *dx*, *dy*, *dz* for pair interaction directions)
 
 **Edge Features:**
-- Interaction Features (e.g., distance, dx, dy, dz)
-- Interaction Color Features (e.g., colIR, colIGreen, colIB, colIG)
+- Interaction Features (e.g., *distance*, *dx*, *dy*, *dz*)
+- Interaction Color Features (e.g., *colIR*, *colIGreen*, *colIB*, *colIG*)
 
 **Target:**
-- Interaction Energy (dE_scaled): The target energy value is scaled for improved performance and accuracy during training.
+- Interaction Energy (*dE_scaled*): The target energy value is scaled for improved performance and accuracy during training.

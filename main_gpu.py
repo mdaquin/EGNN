@@ -103,7 +103,7 @@ for ii in range(1,nRuns+1):
     print("Best MAE on test", best_test,"at",best_epoch)
     print(f"Total time {round(ttt/1000):04d}s for training, {round(tte/1000):04d}s for testing")
     print(f"Average time per epoch {round(ttt/nepoch):04d}ms for training, {round(tte/nepoch):04d}ms for testing")
-    test(best_model, test_loader,device,criterion,optimizer, min, max, show=True,interaction_colors=interaction_colors)
+    test(best_model, test_loader,device,criterion,optimizer, min, max, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom)
     
     del model
     torch.cuda.empty_cache()
@@ -111,7 +111,7 @@ for ii in range(1,nRuns+1):
     plt.show()
 
 df_final = pd.DataFrame(results)
-#df_final.to_csv('data_res.csv', index=False)
+df_final.to_csv('data_res.csv', index=False)
 fig, ax = plt.subplots(figsize=(10,4))
 plt.title('mae')
 plt.xlabel('Epoch')

@@ -77,9 +77,9 @@ for ii in range(1,nRuns+1):
     
     
     
-    plt.ion()
-    plt.show()
-    plt.title('run = %s'%(ii))
+    #plt.ion()
+    #plt.show()
+    #plt.title('run = %s'%(ii))
     for epoch in range(1, nepoch+1):
         results['run'].append(ii)
         results['epoch'].append(epoch)
@@ -103,21 +103,21 @@ for ii in range(1,nRuns+1):
     print("Best MAE on test", best_test,"at",best_epoch)
     print(f"Total time {round(ttt/1000):04d}s for training, {round(tte/1000):04d}s for testing")
     print(f"Average time per epoch {round(ttt/nepoch):04d}ms for training, {round(tte/nepoch):04d}ms for testing")
-    test(best_model, test_loader,device,criterion,optimizer, min, max, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom)
+    test(best_model, test_loader,device,criterion,optimizer, min, max, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom)
     
     del model
     torch.cuda.empty_cache()
-    plt.ioff()
-    plt.show()
+    #plt.ioff()
+    #plt.show()
 
 df_final = pd.DataFrame(results)
-df_final.to_csv('data_res.csv', index=False)
-fig, ax = plt.subplots(figsize=(10,4))
-plt.title('mae')
-plt.xlabel('Epoch')
-plt.ylabel('MAE')
-for key, grp in df_final.groupby('run'):
-    ax.plot(grp['epoch'], grp['MAE'], label=key)
+df_final.to_csv('data_res_ic%s_F%s_K%s.csv'%(interaction_colors,add_Fatom,add_Katom), index=False)
+#fig, ax = plt.subplots(figsize=(10,4))
+#plt.title('mae')
+#plt.xlabel('Epoch')
+#plt.ylabel('MAE')
+#for key, grp in df_final.groupby('run'):
+#    ax.plot(grp['epoch'], grp['MAE'], label=key)
 
-ax.legend()
-plt.show()
+#ax.legend()
+#plt.show()

@@ -1,5 +1,5 @@
 {
-  "interaction_colors": true, 
+  "interaction_colors": false, 
   "add_Fatom": true,
   "add_Katom": true,
   "learning_rate": 0.001,  

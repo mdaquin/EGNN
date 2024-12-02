@@ -11,7 +11,8 @@ torch.cuda.empty_cache()
 
 
 def denormalize(value, key, min_dict, max_dict):
-    return value * (max_dict[key] - min_dict[key] + 1e-8) + min_dict[key]
+    return value * (max_dict - min_dict) + min_dict
+    #return value * (max_dict[key] - min_dict[key] + 1e-8) + min_dict[key]
 
     
 
@@ -76,8 +77,8 @@ def train(model, train_loader,device,criterion,optimizer, min_values, max_values
             edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
         out = model(x, data.edge_index, data.batch, edAtt).to(device)#.cuda() 
         real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1)
-        real_dn = real #denormalize(real,'dE_scaled', min_values, max_values, inplace=False)
-        out_dn =  out #denormalize(out,'dE_scaled', min_values, max_values, inplace=False)
+        real_dn = denormalize(real,'dE_scaled', min_values, max_values)
+        out_dn =  denormalize(out,'dE_scaled', min_values, max_values)
         
         loss = criterion(out_dn, real_dn)  # Compute the loss.
         loss.backward()  
@@ -134,8 +135,8 @@ def test(model, loader, device,criterion,optimizer, min_values, max_values, show
          out = model(x, data.edge_index, data.batch, edAtt).detach()
          real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1).detach()
          
-         real_dn = real #denormalize(real,'dE_scaled', min_values, max_values, inplace=False)
-         out_dn =  out#denormalize(out,'dE_scaled', min_values, max_values, inplace=False)
+         real_dn = denormalize(real,'dE_scaled', min_values, max_values)
+         out_dn =  denormalize(out,'dE_scaled', min_values, max_values)
          
          err = (real_dn-out_dn).abs()
          if errs is None: errs = err

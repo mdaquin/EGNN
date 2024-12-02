@@ -103,6 +103,7 @@ for ii in range(1,nRuns+1):
             best_test = test_acc
             best_model = copy.deepcopy(model)
             best_epoch = epoch
+            torch.save(best_model,'data/best_model_%s_ic%s_F%s_K%s.pt'%(ii,interaction_colors,add_Fatom,add_Katom))
         print(f'Epoch: {epoch:03d} ({tt:04d}/{te:04d}), Train MAE: {train_acc:.4f}, Test MAE: {test_acc:.4f} (best: {best_test:.4f})')
     
     print("Best MAE on test", best_test,"at",best_epoch)

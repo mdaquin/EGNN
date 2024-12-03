@@ -295,7 +295,7 @@ if __name__ == "__main__":
     nRand = int(sys.argv[1])
     add_Fatom = (sys.argv[2])
     add_Katom = (sys.argv[3])
-    
+    dtest     = (sys.argv[4])
     print("random_state = %s"%(nRand))
     print("Fatom=%s"%(add_Fatom))
     print("Katom=%s"%(add_Katom))
@@ -318,7 +318,7 @@ if __name__ == "__main__":
     train = EGNNDataset(train_list)
     test = EGNNDataset(test_list)
     torch.save(train, "data/train_gpu.pt")
-    torch.save(test, "data/test_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,nRand))
+    torch.save(test, "data/test_gpu_ic%s_F%s_K%s_%s.pt"%(dtest,add_Fatom,add_Katom,nRand))
     
 # =============================================================================
 #     if show_graph == True :

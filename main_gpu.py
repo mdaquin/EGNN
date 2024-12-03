@@ -64,7 +64,7 @@ for ii in range(1,nRuns+1):
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.L1Loss() 
 
-    os.system("python3.10 create_graph_dataset.py %s %s %s"%(ii,add_Fatom,add_Katom)) 
+    os.system("python3.10 create_graph_dataset.py %s %s %s %s"%(ii,add_Fatom,add_Katom,interaction_colors)) 
     
     train_dataset = torch.load("data/train_gpu.pt", weights_only=False)
     min, max = train_dataset.normalise()

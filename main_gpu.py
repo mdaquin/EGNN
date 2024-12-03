@@ -68,7 +68,7 @@ for ii in range(1,nRuns+1):
     
     train_dataset = torch.load("data/train_gpu.pt", weights_only=False)
     min, max = train_dataset.normalise()
-    test_dataset = torch.load("data/test_gpu.pt", weights_only=False)
+    test_dataset = torch.load("data/test_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,nRand), weights_only=False)
     test_dataset.normalise(min, max)
     
     train_loader = DataLoader(train_dataset, batch_size=batch_size_train, shuffle=True)

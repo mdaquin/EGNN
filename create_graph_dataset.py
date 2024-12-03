@@ -318,7 +318,7 @@ if __name__ == "__main__":
     train = EGNNDataset(train_list)
     test = EGNNDataset(test_list)
     torch.save(train, "data/train_gpu.pt")
-    torch.save(test, "data/test_gpu.pt")
+    torch.save(test, "data/test_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,nRand))
     
 # =============================================================================
 #     if show_graph == True :

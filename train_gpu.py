@@ -77,8 +77,8 @@ def train(model, train_loader,device,criterion,optimizer, min_values, max_values
             edAtt = torch.hstack((distance, dx, dy, dz)).to(torch.float32)
         out = model(x, data.edge_index, data.batch, edAtt).to(device)#.cuda() 
         real = data.dE_scaled.to(torch.float32).view(len(data.dE_scaled), -1)
-        real_dn = denormalize(real,'dE_scaled', min_values, max_values)
-        out_dn =  denormalize(out,'dE_scaled', min_values, max_values)
+        real_dn = real # denormalize(real,'dE_scaled', min_values, max_values)
+        out_dn =  out # denormalize(out,'dE_scaled', min_values, max_values)
         
         loss = criterion(out_dn, real_dn)  # Compute the loss.
         loss.backward()  

@@ -1,4 +1,4 @@
-# EGNN (Edge Graph Neural Network)
+# EGNN (Graph Neural Network)
 
 EGNN is designed for the task of predicting molecular interaction energies based on graph-structured data. The model uses graph representations of chemical systems, where atoms are represented as nodes, and their interactions are represented as edges. This version of EGNN computes interaction colors and incorporates various atomic and distance-based features for better predictions.
 

@@ -119,11 +119,20 @@ for ii in range(1,nRuns+1):
 df_final = pd.DataFrame(results)
 df_final.to_csv('data_res_ic%s_F%s_K%s.csv'%(interaction_colors,add_Fatom,add_Katom), index=False)
 #fig, ax = plt.subplots(figsize=(10,4))
-#plt.title('mae')
-#plt.xlabel('Epoch')
-#plt.ylabel('MAE')
-#for key, grp in df_final.groupby('run'):
-#    ax.plot(grp['epoch'], grp['MAE'], label=key)
 
-#ax.legend()
-#plt.show()
+# =============================================================================
+# df_final = pd.read_csv('data_res_icFalse_FFalse_KFalse.csv')
+# lowest_mae_per_run = df_final.loc[df_final.groupby('run')['MAE'].idxmin()]['MAE']
+# last_mae = df_final[df_final['epoch'] == 1000]['MAE']
+# fig, ax = plt.subplots(figsize=(10,4))
+# ax.text(450, 500, r'MAE(last epoch)=%0.2f$\pm$(%0.2f)'%(last_mae.mean(), last_mae.std(ddof=1)), fontsize=15)
+# ax.text(450, 700, r'MAE(lowest)=%0.2f$\pm$(%0.2f)'%(lowest_mae_per_run.mean(),lowest_mae_per_run.std(ddof=1)), fontsize=15)
+# plt.xlabel('Epoch')
+# plt.ylabel('MAE')
+# for key, grp in df_final.groupby('run'):
+#     ax.plot(grp['epoch'], grp['MAE'], label=key)
+# 
+# ax.legend()
+# 
+# plt.show()
+# =============================================================================

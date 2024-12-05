@@ -8,7 +8,7 @@ import pandas as pd
 from train_gpu import train, test, sizeofmodel 
 import gc
 import json,sys
-
+from create_graph_dataset import create_graph
 
 
 if len(sys.argv) != 2:
@@ -64,9 +64,11 @@ for ii in range(1,nRuns+1):
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.L1Loss() 
 
-    os.system("python3.10 create_graph_dataset.py %s %s %s %s"%(ii,add_Fatom,add_Katom,interaction_colors)) 
+    #os.system("python3.10 create_graph_dataset.py %s %s %s %s"%(ii,add_Fatom,add_Katom,interaction_colors)) 
     
-    train_dataset = torch.load("data/train_gpu.pt", weights_only=False)
+    create_graph(ii,add_Fatom,add_Katom,interaction_colors)
+    
+    train_dataset = torch.load("data/train_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii), weights_only=False)
     min, max = train_dataset.normalise()
     test_dataset = torch.load("data/test_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii), weights_only=False)
     test_dataset.normalise(min, max)

@@ -150,7 +150,7 @@ def test(model, loader, device,criterion,optimizer, min_values, max_values, show
          if clear: plt.clf()
          c="b" if not clear else "lightgrey"
          plt.scatter(toshow.T[0], toshow.T[1], color=c)
-         plt.plot([0.0, 1.0], [0.0, 1.0], color="r")
+         plt.plot([toshow.T[0].min(), toshow.T[0].max()], [toshow.T[0].min(), toshow.T[0].max()], color="r")
          if not clear: plt.draw()
          if not clear: plt.pause(0.0001)
      del data, cR, cG, cB, a, x, distance, dx, dy, dz 

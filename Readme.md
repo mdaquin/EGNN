@@ -3,9 +3,11 @@
 EGNN is designed for the task of predicting molecular interaction energies based on graph-structured data. The model uses graph representations of chemical systems, where atoms are represented as nodes, and their interactions are represented as edges. This version of EGNN computes interaction colors and incorporates various atomic and distance-based features for better predictions.
 
 
-## Features
+## Graph representations 
 
-- **Graph Representation** : 
+<div align="center">
+<img src="https://github.com/mdaquin/EGNN/tree/main/EGNN_logo.png">
+</div>
 
 ## Model Overview
 
@@ -41,12 +43,12 @@ Clone the project to your machine and install all requirements:
 
 The model aims to predict the interaction energy of a molecular system by learning the complex relationships between atoms and their interactions. The performance can be visualized using plots of predicted vs. actual interaction energies for cases: 
 
-- **Interaction colour is True**, **no F atom**, **no K atom**: 
+- **Yes Interaction colour**, **No F atom**, **No K atom** ; 
+- **No Interaction colours**, **No F atom**, **No K atom** ; 
+- **Yes Interaction colour**, **Yes F atom**, **Yes K atom** ; 
+- **No Interaction colours**, **Yes F atom**, **Yes K atom** ;
 
-ADD PLOTS + RES 
 
-- **Interaction colour is True**, **there is F atom**, **there is  K atom**: 
-ADD PLOTS + RES 
-
-- **Interaction colour is False**, **there is F atom**, **there is  K atom**: 
-ADD PLOTS + RES 
+<div align="center">
+<img src="https://github.com/mdaquin/EGNN/tree/main/results_mae.png">
+</div>

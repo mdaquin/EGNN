@@ -6,7 +6,7 @@ EGNN is designed for the task of predicting molecular interaction energies based
 ## Graph representations 
 
 <div align="center">
-<img src="https://github.com/mdaquin/EGNN/tree/main/EGNN_logo.png">
+<img src="https://github.com/mdaquin/EGNN/blob/main/EGNN_logo.png?raw=true">
 </div>
 
 ## Model Overview
@@ -50,5 +50,5 @@ The model aims to predict the interaction energy of a molecular system by learni
 
 
 <div align="center">
-<img src="https://github.com/mdaquin/EGNN/tree/main/results_mae.png">
+<img src="https://github.com/mdaquin/EGNN/tree/main/results_mae.png?raw=true">
 </div>

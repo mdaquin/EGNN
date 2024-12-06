@@ -50,5 +50,5 @@ The model aims to predict the interaction energy of a molecular system by learni
 
 
 <div align="center">
-<img src="https://github.com/mdaquin/EGNN/tree/main/results_mae.png?raw=true">
+<img src="https://github.com/mdaquin/EGNN/blob/main/results_mae.png?raw=true">
 </div>

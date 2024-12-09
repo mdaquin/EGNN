@@ -32,6 +32,11 @@ Clone the project to your machine and install all requirements:
   cd EGNN
   pip install -r requirements.txt
 ```
+## How to run?  
+```bash
+  python3.10 main_gpu.py input_config.json
+```
+Here is *input_config.json* file where the setting are initialized. Please, chnage them with respect to your task. 
 
 ## Data Preparation 
 
@@ -52,3 +57,5 @@ The model aims to predict the interaction energy of a molecular system by learni
 <div align="center">
 <img src="https://github.com/mdaquin/EGNN/blob/main/results_mae.png?raw=true">
 </div>
+
+

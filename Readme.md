@@ -1,6 +1,6 @@
 # EGNN (Graph Neural Network)
 
-EGNN is designed for the task of predicting molecular interaction energies based on graph-structured data. The model uses graph representations of chemical systems, where atoms are represented as nodes, and their interactions are represented as edges. This version of EGNN computes interaction colors and incorporates various atomic and distance-based features for better predictions.
+EGNN is designed for the task of predicting molecular interaction energies based on graph-structured data. The model uses graph representations of chemical systems, where atoms are represented as nodes, and their interactions are represented as edges. This version of EGNN computes interaction colors and incorporates various atomic and distance-based features for better predictions. The data to train GNN model were taken from [1]. 
 
 
 ## Graph representations 
@@ -58,4 +58,20 @@ The model aims to predict the interaction energy of a molecular system by learni
 <img src="https://github.com/mdaquin/EGNN/blob/main/results_mae.png?raw=true">
 </div>
 
-
+## References
+```txt
+[1] @article{Pascale2024,
+  title = {t2gd orbital ordering patterns in KBF3 (B = Sc,  Ti,  Fe,  Co) perovskites},
+  volume = {45},
+  ISSN = {1096-987X},
+  url = {http://dx.doi.org/10.1002/jcc.27391},
+  DOI = {10.1002/jcc.27391},
+  number = {24},
+  journal = {Journal of Computational Chemistry},
+  publisher = {Wiley},
+  author = {Pascale,  Fabien and D’Arco,  Philippe and Mustapha,  Sami and Dovesi,  Roberto},
+  year = {2024},
+  month = may,
+  pages = {2048–2058}
+}
+```

@@ -36,7 +36,7 @@ Clone the project to your machine and install all requirements:
 ```bash
   python3.10 main_gpu.py input_config.json
 ```
-Here is *input_config.json* file where the setting are initialized. Please, chnage them with respect to your task. 
+Here is *input_config.json* file where the setting are initialized. Please, change them with respect to your task. 
 
 ## Data Preparation 
 

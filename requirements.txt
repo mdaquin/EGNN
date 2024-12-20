@@ -1,6 +1,6 @@
 matplotlib==3.8.1
 networkx==3.0
-numpy==1.21.5
+numpy
 pandas==2.2.3
 torch==2.0.0
 torch_geometric==2.6.1

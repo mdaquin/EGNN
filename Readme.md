@@ -15,7 +15,7 @@ The model is designed to predict the interaction energy of a molecule using a gr
 
 **Node Features:**
 - Atomic Properties (e.g., *atom*, *metal*, *fluoride*, *potassium*)
-- Color Features (e.g., *colR*, *colG*, *colB* for red, green, and blue), which represent the electron occupation in t$_2$g *d* orbitals for this dataset
+- Color Features (e.g., *colR*, *colG*, *colB* for red, green, and blue), which represent the electron occupation in t<sub>2</sub>g *d* orbitals for this dataset
 - Position Features (e.g., *dx*, *dy*, *dz* for  displacements in x/y/z directions)
 
 **Edge Features:**
@@ -61,12 +61,12 @@ The model aims to predict the interaction energy of a molecular system by learni
 ## Dataset description
 
 The dataset is derived from the study by the Pascale et al. (2024)  [[1]](#1) and Pascale et al. (2023)[[3]](#3), which explores the orbital ordering (OO) patterns 
-in KBF$_3$ perovskites, where B represents transition metals such as Sc, Ti, Fe, and Co. 
-The research employs quantum mechanical methods, specifically a Gaussian-type basis set with the B3LYP hybrid functional with the CRYSTAL17 code, 
-to analyze the partial occupancy of the t$_2$g *d* orbitals in these materials. 
+in KBF<sub>3</sub> perovskites, where B represents transition metals such as Sc, Ti, Fe, and Co. 
+The research employs quantum mechanical methods, specifically a Gaussian-type basis set with the B3LYP hybrid functional in the CRYSTAL17 code, 
+to analyze the partial occupancy of the t<sub>2</sub>g *d* orbitals in these materials. 
 By modeling a 40-atom supercell, the study identifies 162 distinct classes of equivalent OO configurations for each fluoroperovskite. 
 The findings indicate that the energy differences among these configurations are minimal, ranging from 1 to 2 millielectronvolts per formula unit, suggesting that multiple configurations may coexist at room and even low temperatures. 
-Additionally, a linear model of 10 parameters considering the relative orbital order in adjacent sites effectively reproduces the energy hierarchy (MAE of 92 $\mu$E$_h$ for this dataset) within the full set of configurations, implying its potential applicability for studying OO in larger supercells.
+Additionally, a linear model of 10 parameters considering the relative orbital order in adjacent sites effectively reproduces the energy hierarchy (MAE of 92 micro E<sub>h</sub> for a range of) within the full set of configurations, implying its potential applicability for studying OO in larger supercells.
 
 The dataset contains the following sheets:
 
@@ -86,7 +86,7 @@ The raw data from which the dataset is derived is accessible in the nomad reposi
 ## References
 
 <a id="1">[1]</a>
-  t$_2$g *d* orbital ordering patterns in KBF3 (B = Sc,  Ti,  Fe,  Co) perovskites},
+  t<sub>2</sub>g *d* orbital ordering patterns in KBF<sub>3</sub> (B = Sc,  Ti,  Fe,  Co) perovskites},
   Pascale Fabien, D'Arco Philippe, Mustapha Sami and Dovesi Roberto, 
   Journal of Computational Chemistry,
   2024, 45(24), 2048-2058,
@@ -96,7 +96,7 @@ The raw data from which the dataset is derived is accessible in the nomad reposi
   Solid solution K[Sc,Ti,Co,Fe]F3 dataset, with [DOI 10.17172/NOMAD/2024.04.16-1](https://dx.doi.org/10.17172/NOMAD/2024.04.16-1).
 
 <a id="3">[3]</a>
-  The $d$ Orbital Multi Pattern Occupancy in a Partially Filled $d$ Shell: The KFeF$_3$ Perovskite as a Test Case,
+  The *d* Orbital Multi Pattern Occupancy in a Partially Filled *d* Shell: The KFeF<sub>3</sub> Perovskite as a Test Case,
   Pascale Fabien, Mustapha Sami, D'Arco Philippe and Dovesio Roberto, 
   Materias, 2023, 16 (4), 1532,
   [doi: 10.3390/ma16041532](https://dx.doi.org/10.3390/ma16041532).

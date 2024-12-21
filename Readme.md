@@ -66,7 +66,7 @@ The research employs quantum mechanical methods, specifically a Gaussian-type ba
 to analyze the partial occupancy of the t<sub>2</sub>g *d* orbitals in these materials. 
 By modeling a 40-atom supercell, the study identifies 162 distinct classes of equivalent OO configurations for each fluoroperovskite. 
 The findings indicate that the energy differences among these configurations are minimal, ranging from 1 to 2 millielectronvolts per formula unit, suggesting that multiple configurations may coexist at room and even low temperatures. 
-Additionally, a linear model of 10 parameters considering the relative orbital order in adjacent sites effectively reproduces the energy hierarchy (MAE of 92 micro E<sub>h</sub> for a range of) within the full set of configurations, implying its potential applicability for studying OO in larger supercells.
+Additionally, a linear model of 10 parameters considering the relative orbital order in adjacent sites effectively reproduces the energy hierarchy (MAE of 92 micro E<sub>h</sub>, 3% of range: 0 - 3233) within the full set of configurations, implying its potential applicability for studying OO in larger supercells.
 
 The dataset contains the following sheets:
 

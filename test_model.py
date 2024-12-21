@@ -89,7 +89,8 @@ def test(model, loader, device,criterion,optimizer, min_values, max_values, show
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
-with open("input_config_TTT.json") as f:
+#with open("input_config_TTT.json") as f:
+with open("input_config.json") as f:
    params = json.load(f)
 
 
@@ -157,7 +158,7 @@ for key, grp in df.groupby('run'):
 ax.text(450, 500, r'MAE(full set)=%0.2f$\pm$(%0.2f)'%(df_final.full_mae.mean(), df_final.full_mae.std(ddof=1)), fontsize=15)
 ax.text(450, 600, r'MAE(test set)=%0.2f$\pm$(%0.2f)'%(df_final.test_mae.mean(),df_final.test_mae.std(ddof=1)), fontsize=15)
 plt.xlabel('Epoch')
-plt.ylabel('MAE')
+plt.ylabel(f'MAE ($\mu$$E_h$, range: 0 - {int(abs(minX)+abs(maxX))}])')
 ax.legend()
 plt.savefig("ic%s_F%s_K%s_mae.pdf"%(interaction_colors,add_Fatom,add_Katom))
 plt.show()

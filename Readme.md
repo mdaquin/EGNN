@@ -1,6 +1,6 @@
 # EGNN (Graph Neural Network)
 
-EGNN is designed for the task of predicting molecular interaction energies based on graph-structured data. The model uses graph representations of chemical systems, where atoms are represented as nodes, and their interactions are represented as edges. This version of EGNN computes interaction colors and incorporates various atomic and distance-based features for better predictions. The data to train GNN model were taken from [1]. 
+EGNN is designed for the task of predicting molecular interaction energies based on graph-structured data. The model uses graph representations of chemical systems, where atoms are represented as nodes, and their interactions are represented as edges. This version of EGNN computes interaction colors and incorporates various atomic and distance-based features for better predictions. The data to train the GNN model were taken from [1]. 
 
 
 ## Graph representations 
@@ -36,13 +36,13 @@ Clone the project to your machine and install all requirements:
 ```bash
   python3.10 main_gpu.py input_config.json
 ```
-Here is *input_config.json* file where the setting are initialized. Please, change them with respect to your task. 
+The *input_config.json* file is where the settings are initialized. Please, change them with respect to your task. 
 
 ## Data Preparation 
 
 - Normalisation: The node and edge features are normalized using min-max scaling to ensure that all features are on a similar scale for better training convergence. 
 
-- De-normalisation: To compute loss we de-normalise data back. 
+- De-normalisation: To compute the evaluation measure (MAE) we de-normalise the outputs back to their original scale. 
 
 # Results: 
 
@@ -62,22 +62,23 @@ The model aims to predict the interaction energy of a molecular system by learni
 
 The dataset is derived from the study by the Pascale et al. (2024)  [[1]](#1) and Pascale et al. (2023)[[3]](#3), which explores the orbital ordering (OO) patterns 
 in KBF<sub>3</sub> perovskites, where B represents transition metals such as Sc, Ti, Fe, and Co. 
-The research employs quantum mechanical methods, specifically a Gaussian-type basis set with the B3LYP hybrid functional in the CRYSTAL17 code, 
-to analyze the partial occupancy of the t<sub>2</sub>g *d* orbitals in these materials. 
+
+The research employs quantum mechanical methods, specifically a Gaussian-type basis set with the B3LYP hybrid functional in the CRYSTAL17 code, to analyze the partial occupancy of the t<sub>2</sub>g *d* orbitals in these materials. 
+
 By modeling a 40-atom supercell, the study identifies 162 distinct classes of equivalent OO configurations for each fluoroperovskite. 
+
 The findings indicate that the energy differences among these configurations are minimal, ranging from 1 to 2 millielectronvolts per formula unit, suggesting that multiple configurations may coexist at room and even low temperatures. 
+
 Additionally, a linear model of 10 parameters considering the relative orbital order in adjacent sites effectively reproduces the energy hierarchy (MAE of 92 micro E<sub>h</sub>, 3% of range: 0 - 3233) within the full set of configurations, implying its potential applicability for studying OO in larger supercells.
 
 The dataset contains the following sheets:
 
-    "geometry" Sheet outlines the relationship between the crystallographic structure of the perovskites and a set of reduced parameters used to describe it.
-
-    "data_by_metal" Sheet provides:
-        Optimized geometries,
-        Energy values, and
-        Orbital occupations (represented as color codes) for the 162 irreducible configurations of the t₂g electrons for each of the four metals (Sc, Ti, Fe, and Cr).
-
-    "alldata" Sheet compiles the data from the other sheets and includes an additional quadrupolar component for each metal, resulting in a comprehensive and correlated dataset of 648 entries.
+ 1. The **geometry** Sheet outlines the relationship between the crystallographic structure of the perovskites and a set of reduced parameters used to describe it.
+ 1. The **data_by_metal** Sheet provides:
+    * Optimized geometries,
+    * Energy values, and
+    * Orbital occupations (represented as color codes) for the 162 irreducible configurations of the t₂g electrons for each of the four metals (Sc, Ti, Fe, and Cr).
+ 1. The **alldata** Sheet compiles the data from the other sheets and includes an additional quadrupolar component for each metal, resulting in a comprehensive and correlated dataset of 648 entries.
 
 Detailed explanations of the dataset, its generation, and its implications can be found in the associated research articles and supplementary materials [[1]](#1) and [[3]](#3). 
 

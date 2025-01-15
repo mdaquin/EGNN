@@ -107,22 +107,25 @@ def test(model, loader, device,criterion,optimizer, min_values, max_values, show
          cG = data.colG.view(data.colG.size(0), -1)
          cB = data.colB.view(data.colB.size(0), -1)
          a = data.atom.view(data.atom.size(0), -1)
-         
+         cIRN = data.colIRN.to(torch.float).view(len(data.colIRN), -1)
+         cIGN = data.colIGreenN.to(torch.float).view(len(data.colIGreenN), -1)
+         cIBN = data.colIBN.to(torch.float).view(len(data.colIBN), -1)
+         cIGrN = data.colIGN.to(torch.float).view(len(data.colIGN), -1)
          if add_Fatom == True and add_Katom == True: 
              f = data.fluoride.view(data.fluoride.size(0), -1)
              m = data.metal.view(data.metal.size(0), -1)
              k = data.potassium.view(data.potassium.size(0), -1)
-             x = torch.hstack((cR,cG,cB,a,f,m,k)).to(torch.float32)
+             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m,k)).to(torch.float32)
          if add_Fatom == False and add_Katom == True: 
              m = data.metal.view(data.metal.size(0), -1)
              k = data.potassium.view(data.potassium.size(0), -1)
-             x = torch.hstack((cR,cG,cB,a,m,k)).to(torch.float32)
+             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,m,k)).to(torch.float32)
          if add_Fatom == True and add_Katom == False: 
              f = data.fluoride.view(data.fluoride.size(0), -1)
              m = data.metal.view(data.metal.size(0), -1)
-             x = torch.hstack((cR,cG,cB,a,f,m)).to(torch.float32)
+             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m)).to(torch.float32)
          if add_Fatom == False and add_Katom == False: 
-             x = torch.hstack((cR,cG,cB,a)).to(torch.float32)    
+             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a)).to(torch.float32)      
              
          x = x.to(device)#.cuda()
          

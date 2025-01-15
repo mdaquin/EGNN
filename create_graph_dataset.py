@@ -194,14 +194,18 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
   colors=[]  
   ng = l.name
   cutoff_distance = 5.0 
-  
+  param_IR = [] 
+  param_IGreen = [] 
+  param_IB = [] 
+  param_IG = [] 
   if G is None: G=nx.Graph(dE_scaled=l["dE scaled"])
-  for i in range(1, 9):
+  for i in range(1, 9):     
       col = l[f"Color Metal{i}"].lower()
       colR, colG, colB = 1 if col=="r" else 0, 1 if col=="v" else 0, 1 if col=="b" else 0
       G.add_node(f"{ng}_M{i}", colR=colR, colG=colG, colB=colB, atom=l["Z"], metal=1, fluoride=0, potassium=0) 
       colors.append(col if col != "v" else "g")
-      for j in range(i+1,9):
+      for j in range(1,9):
+          if i != j : 
                distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]),3)
                if distance <= cutoff_distance:
                    posi = posM(i)
@@ -232,13 +236,25 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
                    
                    colIR, colIGreen, colIB, colIG = 1 if interaction_color=="red" else 0, 1 if interaction_color=="green" else 0, 1 if interaction_color=="blue" else 0, 1 if interaction_color=="grey" else 0
                    G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",dx=x, dy=y, dz=z,distance=distance,colIR=colIR, colIGreen=colIGreen, colIB=colIB, colIG=colIG, interaction_color=interaction_color)
-
+                   
+                   param_IR.append(colIR)
+                   param_IGreen.append(colIGreen)
+                   param_IB.append(colIB)
+                   param_IG.append(colIG)
+                                   
+                   ##### 
+      G.add_node(f"{ng}_M{i}", colIRN=param_IR, colIGreenN=param_IGreen, colIBN=param_IB, colIGN=param_IG)
+      param_IR = [] 
+      param_IGreen = [] 
+      param_IB = [] 
+      param_IG = [] 
+                   
   if add_Katom == False:
       if add_Fatom == False:
           pass   
       elif add_Fatom == True:               
           for i in range(9,21):
-                G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9, metal=0, fluoride=1, potassium=0) 
+                G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=9, metal=0, fluoride=1, potassium=0) 
                 colors.append("lightgrey")
           add_fluorine_metal_connection(G,l,ng)
           
@@ -248,7 +264,7 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
       
       
       if add_Fatom == False:
-          G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19, metal=0, fluoride=0, potassium=1)
+          G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=19, metal=0, fluoride=0, potassium=1)
           colors.append("lightgrey")
           for i in range(1,9):
               G.add_edge(f"{ng}_M{i}", f"{ng}_K",
@@ -256,9 +272,9 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
                  distance=np.round(distMK(i, kx, ky, kz, l["a"], l["b"], l["c"]),3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color)
       else:
         for i in range(9,21):
-            G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, atom=9, metal=0, fluoride=1, potassium=0) 
+            G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=9, metal=0, fluoride=1, potassium=0) 
             colors.append("lightgrey")
-        G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, atom=19, metal=0, fluoride=0, potassium=1) 
+        G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=19, metal=0, fluoride=0, potassium=1) 
         colors.append("lightgrey")
         add_fluorine_metal_connection(G,l,ng)
         add_fluorine_potasium_connection(G,l,ng)
@@ -321,6 +337,7 @@ def create_graph(nRand,add_Fatom,add_Katom,dtest):
     
 # =============================================================================
 #     if show_graph == True :
+#         import random 
 #         linenb= random.randint(0,500)
 #         G,colors,ng = graph_from_line_vec(train_df.iloc[linenb])
 #         displayGraph(G, ng, colors)

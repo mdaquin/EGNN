@@ -17,12 +17,12 @@ def denormalize(value, key, min_dict, max_dict):
     
 
 
-def sizeofmodel (add_Fatom,add_Katom,interaction_colors,input_features = 4):     
+def sizeofmodel (add_Fatom,add_Katom,interaction_colors,input_features = 4,nodeCparams=True):     
     if interaction_colors == True:
         edge_dimen = 8
     else:
-        edge_dimen = 4     
-
+        edge_dimen = 4    
+        
     if add_Fatom == True and add_Katom == True:
         input_features = input_features + 3
     elif add_Fatom == True and add_Katom == False:
@@ -30,8 +30,10 @@ def sizeofmodel (add_Fatom,add_Katom,interaction_colors,input_features = 4):
     elif add_Fatom == False and add_Katom == True:
         input_features = input_features + 2 
     elif add_Fatom == False and add_Katom == False:
-        input_features = input_features  
-    return edge_dimen, input_features     
+        input_features = input_features
+    if  nodeCparams == True: 
+        input_features = input_features + 12
+    return edge_dimen, input_features      
 
 def train(model, train_loader,device,criterion,optimizer, min_values, max_values,interaction_colors=True, add_Fatom =False, add_Katom = False):
     model.train()
@@ -40,6 +42,14 @@ def train(model, train_loader,device,criterion,optimizer, min_values, max_values
         cR = data.colR.view(data.colR.size(0), -1)
         cG = data.colG.view(data.colG.size(0), -1)
         cB = data.colB.view(data.colB.size(0), -1)
+        
+        cIRN = data.colIRN.to(torch.float).view(len(data.colIRN), -1)
+        cIGN = data.colIGreenN.to(torch.float).view(len(data.colIGreenN), -1)
+        cIBN = data.colIBN.to(torch.float).view(len(data.colIBN), -1)
+        cIGrN = data.colIGN.to(torch.float).view(len(data.colIGN), -1)
+        
+        
+        
         a = data.atom.view(data.atom.size(0), -1)
         
         
@@ -47,17 +57,17 @@ def train(model, train_loader,device,criterion,optimizer, min_values, max_values
             f = data.fluoride.view(data.fluoride.size(0), -1)
             m = data.metal.view(data.metal.size(0), -1)
             k = data.potassium.view(data.potassium.size(0), -1)
-            x = torch.hstack((cR,cG,cB,a,f,m,k)).to(torch.float32)
+            x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m,k)).to(torch.float32)
         if add_Fatom == False and add_Katom == True: 
             m = data.metal.view(data.metal.size(0), -1)
             k = data.potassium.view(data.potassium.size(0), -1)
-            x = torch.hstack((cR,cG,cB,a,m,k)).to(torch.float32)
+            x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,m,k)).to(torch.float32)
         if add_Fatom == True and add_Katom == False: 
             f = data.fluoride.view(data.fluoride.size(0), -1)
             m = data.metal.view(data.metal.size(0), -1)
-            x = torch.hstack((cR,cG,cB,a,f,m)).to(torch.float32)
+            x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m)).to(torch.float32)
         if add_Fatom == False and add_Katom == False: 
-            x = torch.hstack((cR,cG,cB,a)).to(torch.float32)    
+            x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a)).to(torch.float32)    
             
         x = x.to(device)#.cuda()
         

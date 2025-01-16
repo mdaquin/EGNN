@@ -58,6 +58,14 @@ The model aims to predict the interaction energy of a molecular system by learni
 <img src="https://github.com/mdaquin/EGNN/blob/main/results_mae.png?raw=true">
 </div>
 
+After applying a new node feature (each node containg the information of the triplet interaction)
+
+<div align="center">
+<img src="https://github.com/mdaquin/EGNN/blob/main/results_mae_3param.png?raw=true">
+</div>
+
+
+
 ## Dataset description
 
 The dataset is derived from the study by the Pascale et al. (2024)  [[1]](#1) and Pascale et al. (2023)[[3]](#3), which explores the orbital ordering (OO) patterns 

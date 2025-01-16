@@ -95,7 +95,7 @@ The raw data from which the dataset is derived is accessible in the nomad reposi
 ## References
 
 <a id="1">[1]</a>
-  t<sub>2</sub>g *d* orbital ordering patterns in KBF<sub>3</sub> (B = Sc,  Ti,  Fe,  Co) perovskites},
+  t<sub>2</sub>g *d* orbital ordering patterns in KBF<sub>3</sub> (B = Sc,  Ti,  Fe,  Co) perovskites,
   Pascale Fabien, D'Arco Philippe, Mustapha Sami and Dovesi Roberto, 
   Journal of Computational Chemistry,
   2024, 45(24), 2048-2058,

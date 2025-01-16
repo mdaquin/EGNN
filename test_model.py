@@ -27,22 +27,25 @@ def test(model, loader, device,criterion,optimizer, min_values, max_values, show
          cG = data.colG.view(data.colG.size(0), -1)
          cB = data.colB.view(data.colB.size(0), -1)
          a = data.atom.view(data.atom.size(0), -1)
-         
+         cIRN = data.colIRN.to(torch.float).view(len(data.colIRN), -1)
+         cIGN = data.colIGreenN.to(torch.float).view(len(data.colIGreenN), -1)
+         cIBN = data.colIBN.to(torch.float).view(len(data.colIBN), -1)
+         cIGrN = data.colIGN.to(torch.float).view(len(data.colIGN), -1)
          if add_Fatom == True and add_Katom == True: 
              f = data.fluoride.view(data.fluoride.size(0), -1)
              m = data.metal.view(data.metal.size(0), -1)
              k = data.potassium.view(data.potassium.size(0), -1)
-             x = torch.hstack((cR,cG,cB,a,f,m,k)).to(torch.float32)
+             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m,k)).to(torch.float32)
          if add_Fatom == False and add_Katom == True: 
              m = data.metal.view(data.metal.size(0), -1)
              k = data.potassium.view(data.potassium.size(0), -1)
-             x = torch.hstack((cR,cG,cB,a,m,k)).to(torch.float32)
+             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,m,k)).to(torch.float32)
          if add_Fatom == True and add_Katom == False: 
              f = data.fluoride.view(data.fluoride.size(0), -1)
              m = data.metal.view(data.metal.size(0), -1)
-             x = torch.hstack((cR,cG,cB,a,f,m)).to(torch.float32)
+             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m)).to(torch.float32)
          if add_Fatom == False and add_Katom == False: 
-             x = torch.hstack((cR,cG,cB,a)).to(torch.float32)    
+             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a)).to(torch.float32)      
              
          x = x.to(device)#.cuda()
          
@@ -90,7 +93,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
 #with open("input_config_TTT.json") as f:
-with open("input_config.json") as f:
+with open("input_config_TFF.json") as f:
    params = json.load(f)
 
 
@@ -160,6 +163,6 @@ ax.text(450, 600, r'MAE(test set)=%0.2f$\pm$(%0.2f)'%(df_final.test_mae.mean(),d
 plt.xlabel('Epoch')
 plt.ylabel(f'MAE ($\mu$$E_h$, range: 0 - {int(abs(minX)+abs(maxX))}])')
 ax.legend()
-plt.savefig("ic%s_F%s_K%s_mae.pdf"%(interaction_colors,add_Fatom,add_Katom))
+plt.savefig("ic%s_F%s_K%s_mae_3par.pdf"%(interaction_colors,add_Fatom,add_Katom))
 plt.show()
 # ===============================================

@@ -241,8 +241,17 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
                    param_IGreen.append(colIGreen)
                    param_IB.append(colIB)
                    param_IG.append(colIG)
-                                   
-                   ##### 
+                   
+                   
+                   
+                   
+      
+                  ##### 
+      #param_IR = torch.tensor(param_IR,dtype=torch.int) 
+      #param_IGreen = torch.tensor(param_IGreen,dtype=torch.int) 
+      #param_IB = torch.tensor(param_IB,dtype=torch.int) 
+      #param_IG = torch.tensor(param_IG,dtype=torch.int) 
+      
       G.add_node(f"{ng}_M{i}", colIRN=param_IR, colIGreenN=param_IGreen, colIBN=param_IB, colIGN=param_IG)
       param_IR = [] 
       param_IGreen = [] 
@@ -254,7 +263,7 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
           pass   
       elif add_Fatom == True:               
           for i in range(9,21):
-                G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=9, metal=0, fluoride=1, potassium=0) 
+                G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, colIRN=[0,0,0], colIGreenN=[0,0,0], colIBN=[0,0,0], colIGN=[0,0,0], atom=9, metal=0, fluoride=1, potassium=0) 
                 colors.append("lightgrey")
           add_fluorine_metal_connection(G,l,ng)
           
@@ -264,7 +273,7 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
       
       
       if add_Fatom == False:
-          G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=19, metal=0, fluoride=0, potassium=1)
+          G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, colIRN=[0,0,0], colIGreenN=[0,0,0], colIBN=[0,0,0], colIGN=[0,0,0], atom=19, metal=0, fluoride=0, potassium=1)
           colors.append("lightgrey")
           for i in range(1,9):
               G.add_edge(f"{ng}_M{i}", f"{ng}_K",
@@ -272,9 +281,9 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
                  distance=np.round(distMK(i, kx, ky, kz, l["a"], l["b"], l["c"]),3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color)
       else:
         for i in range(9,21):
-            G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=9, metal=0, fluoride=1, potassium=0) 
+            G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, colIRN=[0,0,0], colIGreenN=[0,0,0], colIBN=[0,0,0], colIGN=[0,0,0], atom=9, metal=0, fluoride=1, potassium=0) 
             colors.append("lightgrey")
-        G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=19, metal=0, fluoride=0, potassium=1) 
+        G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, colIRN=[0,0,0], colIGreenN=[0,0,0], colIBN=[0,0,0], colIGN=[0,0,0], atom=19, metal=0, fluoride=0, potassium=1) 
         colors.append("lightgrey")
         add_fluorine_metal_connection(G,l,ng)
         add_fluorine_potasium_connection(G,l,ng)

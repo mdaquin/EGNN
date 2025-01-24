@@ -2,6 +2,7 @@
   "interaction_colors": false, 
   "add_Fatom": false,
   "add_Katom": false,
+  "add_3P": true,
   "learning_rate": 0.001,  
   "batch_size_train": 64,
   "batch_size_test": 200,

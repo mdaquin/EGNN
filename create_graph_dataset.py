@@ -189,8 +189,88 @@ def add_fluorine_potasium_connection(G,l,ng,default_colorFK='black') :
                  distance=np.round(dist(0,0,0.25+l["M6 shift zF18" ]*0.0001,kx,ky,kz,l["a"],l["b"],l["c"]), 3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_colorFK)
 
     
-
 def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = False, G=None, colors=[]):
+  colors=[]  
+  ng = l.name
+  cutoff_distance = 5.0 
+  param_IR = [] 
+  param_IGreen = [] 
+  param_IB = [] 
+  param_IG = [] 
+  if G is None: G=nx.Graph(dE_scaled=l["dE scaled"])
+  for i in range(1, 9):     
+      col = l[f"Color Metal{i}"].lower()
+      colR, colG, colB = 1 if col=="r" else 0, 1 if col=="v" else 0, 1 if col=="b" else 0
+      G.add_node(f"{ng}_M{i}", colR=colR, colG=colG, colB=colB, atom=l["Z"], metal=1, fluoride=0, potassium=0) 
+      colors.append(col if col != "v" else "g")
+      for j in range(i+1,9): 
+               distance=np.round(distMM(i,j,l["a"],l["b"],l["c"]),3)
+               if distance <= cutoff_distance:
+                   posi = posM(i)
+                   posj = posM(j)
+                   x = 1 if posi[0] != posj[0] else 0
+                   y = 1 if posi[1] != posj[1] else 0
+                   z = 1 if posi[2] != posj[2] else 0
+                   
+                   direction = ""
+                   if x == 1:
+                       direction += "x"
+                   if y == 1:
+                       direction += "y"
+                   if z == 1:
+                       direction += "z"
+                   colour1 = l[f"Color Metal{i}"].lower()
+                   colour2 = l[f"Color Metal{j}"].lower()
+    
+                   interaction_type = determine_interaction(colour1, colour2,  direction)
+                   
+                   interaction_color = {
+                "I": "green",
+                "K": "grey",
+                "J": "red",
+                "S": "blue"
+            }.get(interaction_type, 'None')
+                   
+                   
+                   colIR, colIGreen, colIB, colIG = 1 if interaction_color=="red" else 0, 1 if interaction_color=="green" else 0, 1 if interaction_color=="blue" else 0, 1 if interaction_color=="grey" else 0
+                   G.add_edge(f"{ng}_M{i}", f"{ng}_M{j}",dx=x, dy=y, dz=z,distance=distance,colIR=colIR, colIGreen=colIGreen, colIB=colIB, colIG=colIG, interaction_color=interaction_color)
+                  
+                                   
+                   
+  if add_Katom == False:
+      if add_Fatom == False:
+          pass   
+      elif add_Fatom == True:               
+          for i in range(9,21):
+                G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=9, metal=0, fluoride=1, potassium=0) 
+                colors.append("lightgrey")
+          add_fluorine_metal_connection(G,l,ng)
+          
+          
+  else:
+      kx,ky,kz = (0.25+(l["K shift x"]*0.001)),(0.25+(l["K shift y"]*0.001)),(0.25+(l["K shift z"]*0.001))
+      
+      
+      if add_Fatom == False:
+          G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=19, metal=0, fluoride=0, potassium=1)
+          colors.append("lightgrey")
+          for i in range(1,9):
+              G.add_edge(f"{ng}_M{i}", f"{ng}_K",
+                 dx=0, dy=0, dz=0,
+                 distance=np.round(distMK(i, kx, ky, kz, l["a"], l["b"], l["c"]),3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color)
+      else:
+        for i in range(9,21):
+            G.add_node(f"{ng}_F{i}", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=9, metal=0, fluoride=1, potassium=0) 
+            colors.append("lightgrey")
+        G.add_node(f"{ng}_K", colR=0, colG=0, colB=0, colIRN=0, colIGreenN=0, colIBN=0, colIGN=0, atom=19, metal=0, fluoride=0, potassium=1) 
+        colors.append("lightgrey")
+        add_fluorine_metal_connection(G,l,ng)
+        add_fluorine_potasium_connection(G,l,ng)
+            
+  return G, colors,ng
+    
+
+def graph_from_line_vec_3P(l,default_color='black',add_Katom = False, add_Fatom = False, G=None, colors=[]):
   colors=[]  
   ng = l.name
   cutoff_distance = 5.0 
@@ -315,7 +395,7 @@ def displayGraph(G, ng, colors):
 
 
 
-def create_graph(nRand,add_Fatom,add_Katom,dtest):    
+def create_graph(nRand,add_Fatom,add_Katom,add_3P,dtest):    
     
     print("random_state = %s"%(nRand))
     print("Fatom=%s"%(add_Fatom))
@@ -331,18 +411,22 @@ def create_graph(nRand,add_Fatom,add_Katom,dtest):
     train_df = df.sample(int(len(df)*0.8), random_state=nRand)
     test_df = df.drop(train_df.index)
     train_list = []
-    for l in train_df.iloc: train_list.append(from_networkx(graph_from_line_vec(l,default_color=default_color,add_Katom = add_Katom, add_Fatom = add_Fatom)[0]))
-
     test_list = []
-    for l in test_df.iloc: test_list.append(from_networkx(graph_from_line_vec(l,default_color=default_color,add_Katom = add_Katom, add_Fatom = add_Fatom)[0]))
+    
+    if add_3P == False:
+        for l in train_df.iloc: train_list.append(from_networkx(graph_from_line_vec(l,default_color=default_color,add_Katom = add_Katom, add_Fatom = add_Fatom)[0]))
+        for l in test_df.iloc: test_list.append(from_networkx(graph_from_line_vec(l,default_color=default_color,add_Katom = add_Katom, add_Fatom = add_Fatom)[0]))
+    else: 
+        for l in train_df.iloc: train_list.append(from_networkx(graph_from_line_vec_3P(l,default_color=default_color,add_Katom = add_Katom, add_Fatom = add_Fatom)[0]))
+        for l in test_df.iloc: test_list.append(from_networkx(graph_from_line_vec_3P(l,default_color=default_color,add_Katom = add_Katom, add_Fatom = add_Fatom)[0]))
     print("*"*6,"saving", "*"*6)
     train = EGNNDataset(train_list)
     test = EGNNDataset(test_list)
     full_list = train_list + test_list 
     full = EGNNDataset(full_list)
-    torch.save(train, "data/full_ic%s_F%s_K%s.pt"%(dtest,add_Fatom,add_Katom))
-    torch.save(train, "data/train_gpu_ic%s_F%s_K%s_%s.pt"%(dtest,add_Fatom,add_Katom,nRand))
-    torch.save(test, "data/test_gpu_ic%s_F%s_K%s_%s.pt"%(dtest,add_Fatom,add_Katom,nRand))
+    torch.save(full, "data/full_ic%s_F%s_K%s_3P%s.pt"%(dtest,add_Fatom,add_Katom,add_3P))
+    torch.save(train, "data/train_gpu_ic%s_F%s_K%s_%s_3P%s.pt"%(dtest,add_Fatom,add_Katom,nRand,add_3P))
+    torch.save(test, "data/test_gpu_ic%s_F%s_K%s_%s_3P%s.pt"%(dtest,add_Fatom,add_Katom,nRand,add_3P))
     
 # =============================================================================
 #     if show_graph == True :

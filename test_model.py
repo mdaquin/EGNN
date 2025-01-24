@@ -17,7 +17,7 @@ import json
 def denormalize(value, key, min_dict, max_dict):
     return value * (max_dict - min_dict) + min_dict
 
-def test(model, loader, device,criterion,optimizer, min_values, max_values, show=False, clear=False,interaction_colors=True, add_Fatom =False, add_Katom = False):
+def test(model, loader, device,criterion,optimizer, min_values, max_values, show=False, clear=False,interaction_colors=True, add_Fatom =False, add_Katom = False, add_3P = False):
      model.eval()
      errs = None
      if show: toshow = None
@@ -27,25 +27,43 @@ def test(model, loader, device,criterion,optimizer, min_values, max_values, show
          cG = data.colG.view(data.colG.size(0), -1)
          cB = data.colB.view(data.colB.size(0), -1)
          a = data.atom.view(data.atom.size(0), -1)
-         cIRN = data.colIRN.to(torch.float).view(len(data.colIRN), -1)
-         cIGN = data.colIGreenN.to(torch.float).view(len(data.colIGreenN), -1)
-         cIBN = data.colIBN.to(torch.float).view(len(data.colIBN), -1)
-         cIGrN = data.colIGN.to(torch.float).view(len(data.colIGN), -1)
-         if add_Fatom == True and add_Katom == True: 
-             f = data.fluoride.view(data.fluoride.size(0), -1)
-             m = data.metal.view(data.metal.size(0), -1)
-             k = data.potassium.view(data.potassium.size(0), -1)
-             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m,k)).to(torch.float32)
-         if add_Fatom == False and add_Katom == True: 
-             m = data.metal.view(data.metal.size(0), -1)
-             k = data.potassium.view(data.potassium.size(0), -1)
-             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,m,k)).to(torch.float32)
-         if add_Fatom == True and add_Katom == False: 
-             f = data.fluoride.view(data.fluoride.size(0), -1)
-             m = data.metal.view(data.metal.size(0), -1)
-             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m)).to(torch.float32)
-         if add_Fatom == False and add_Katom == False: 
-             x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a)).to(torch.float32)      
+         
+         if add_3P == True:
+             cIRN = data.colIRN.to(torch.float).view(len(data.colIRN), -1)
+             cIGN = data.colIGreenN.to(torch.float).view(len(data.colIGreenN), -1)
+             cIBN = data.colIBN.to(torch.float).view(len(data.colIBN), -1)
+             cIGrN = data.colIGN.to(torch.float).view(len(data.colIGN), -1)
+             if add_Fatom == True and add_Katom == True: 
+                 f = data.fluoride.view(data.fluoride.size(0), -1)
+                 m = data.metal.view(data.metal.size(0), -1)
+                 k = data.potassium.view(data.potassium.size(0), -1)
+                 x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m,k)).to(torch.float32)
+             if add_Fatom == False and add_Katom == True: 
+                 m = data.metal.view(data.metal.size(0), -1)
+                 k = data.potassium.view(data.potassium.size(0), -1)
+                 x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,m,k)).to(torch.float32)
+             if add_Fatom == True and add_Katom == False: 
+                 f = data.fluoride.view(data.fluoride.size(0), -1)
+                 m = data.metal.view(data.metal.size(0), -1)
+                 x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a,f,m)).to(torch.float32)
+             if add_Fatom == False and add_Katom == False: 
+                 x = torch.hstack((cR,cG,cB,cIRN,cIGN,cIBN,cIGrN,a)).to(torch.float32)      
+         else:
+             if add_Fatom == True and add_Katom == True: 
+                 f = data.fluoride.view(data.fluoride.size(0), -1)
+                 m = data.metal.view(data.metal.size(0), -1)
+                 k = data.potassium.view(data.potassium.size(0), -1)
+                 x = torch.hstack((cR,cG,cB,a,f,m,k)).to(torch.float32)
+             if add_Fatom == False and add_Katom == True: 
+                 m = data.metal.view(data.metal.size(0), -1)
+                 k = data.potassium.view(data.potassium.size(0), -1)
+                 x = torch.hstack((cR,cG,cB,a,m,k)).to(torch.float32)
+             if add_Fatom == True and add_Katom == False: 
+                 f = data.fluoride.view(data.fluoride.size(0), -1)
+                 m = data.metal.view(data.metal.size(0), -1)
+                 x = torch.hstack((cR,cG,cB,a,f,m)).to(torch.float32)
+             if add_Fatom == False and add_Katom == False: 
+                 x = torch.hstack((cR,cG,cB,a)).to(torch.float32) 
              
          x = x.to(device)#.cuda()
          
@@ -93,7 +111,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
 #with open("input_config_TTT.json") as f:
-with open("input_config_TFF.json") as f:
+with open("input_config_FTT.json") as f:
    params = json.load(f)
 
 
@@ -103,6 +121,7 @@ batch_size_train   = params['batch_size_train']
 batch_size_test    = params['batch_size_test']   
 add_Fatom          = params['add_Fatom']
 add_Katom          = params['add_Katom']
+add_3P             = params['add_3P']
 hidden_channels    = params['hidden_channels']
 nRuns              = params['Number_of_RUNS']
 nepoch             = params['Epochs']
@@ -127,26 +146,26 @@ results = {'run': [], 'full_mae': [], 'test_mae': [], 'Ecp_f':[], 'Ecr_f':[], 'E
 
 for ii in range (1,nRuns+1):
     results['run'].append(ii)
-    best_model = torch.load('data/best_model_%s_ic%s_F%s_K%s.pt'%(ii,interaction_colors,add_Fatom,add_Katom))
+    best_model = torch.load('data/best_model_%s_ic%s_F%s_K%s_3P%s.pt'%(ii,interaction_colors,add_Fatom,add_Katom,add_3P))
     optimizer = torch.optim.Adam(best_model.parameters(), lr=learning_rate)
     criterion = torch.nn.L1Loss() 
     
-    train_dataset = torch.load("data/train_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii), weights_only=False)
+    train_dataset = torch.load("data/train_gpu_ic%s_F%s_K%s_%s_3P%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii,add_3P), weights_only=False)
     min, max = train_dataset.normalise()
     
-    full_dataset = torch.load("data/full_ic%s_F%s_K%s.pt"%(interaction_colors,add_Fatom,add_Katom), weights_only=False)
+    full_dataset = torch.load("data/full_ic%s_F%s_K%s_3P%s.pt"%(interaction_colors,add_Fatom,add_Katom,add_3P), weights_only=False)
     full_dataset.normalise(min,max) 
     full_loader = DataLoader(full_dataset, batch_size=batch_size_test, shuffle=False)
-    err_full,real_dn,out_dn= test(best_model, full_loader,device,criterion,optimizer, minX, maxX, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom)
+    err_full,real_dn,out_dn= test(best_model, full_loader,device,criterion,optimizer, minX, maxX, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom,add_3P=add_3P)
     results['full_mae'].append(err_full.cpu().numpy())
     results['Ecr_f'].append(real_dn.cpu().numpy())
     results['Ecp_f'].append(out_dn.detach().cpu().numpy())
     
     
-    test_dataset = torch.load("data/test_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii), weights_only=False)
+    test_dataset = torch.load("data/test_gpu_ic%s_F%s_K%s_%s_3P%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii,add_3P), weights_only=False)
     test_dataset.normalise(min,max) 
     test_loader = DataLoader(test_dataset, batch_size=batch_size_test, shuffle=False)
-    err_test,real_dn,out_dn = test(best_model, test_loader,device,criterion,optimizer, minX, maxX, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom)
+    err_test,real_dn,out_dn = test(best_model, test_loader,device,criterion,optimizer, minX, maxX, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom,add_3P=add_3P)
     results['test_mae'].append(err_test.cpu().numpy())
     results['Ecr_t'].append(real_dn.cpu().numpy())
     results['Ecp_t'].append(out_dn.detach().cpu().numpy())
@@ -155,7 +174,7 @@ for ii in range (1,nRuns+1):
 df_final = pd.DataFrame(results)
 
 fig, ax = plt.subplots(figsize=(10,4))
-df = pd.read_csv('data_res_ic%s_F%s_K%s.csv'%(interaction_colors,add_Fatom,add_Katom))
+df = pd.read_csv('data_res_ic%s_F%s_K%s_3P%s.csv'%(interaction_colors,add_Fatom,add_Katom,add_3P))
 for key, grp in df.groupby('run'):
      ax.plot(grp['epoch'], grp['MAE'], label=key)
 ax.text(450, 500, r'MAE(full set)=%0.2f$\pm$(%0.2f)'%(df_final.full_mae.mean(), df_final.full_mae.std(ddof=1)), fontsize=15)
@@ -163,6 +182,6 @@ ax.text(450, 600, r'MAE(test set)=%0.2f$\pm$(%0.2f)'%(df_final.test_mae.mean(),d
 plt.xlabel('Epoch')
 plt.ylabel(f'MAE ($\mu$$E_h$, range: 0 - {int(abs(minX)+abs(maxX))}])')
 ax.legend()
-plt.savefig("ic%s_F%s_K%s_mae_3par.pdf"%(interaction_colors,add_Fatom,add_Katom))
+#plt.savefig("ic%s_F%s_K%s_mae_3par.pdf"%(interaction_colors,add_Fatom,add_Katom))
 plt.show()
 # ===============================================

@@ -45,11 +45,12 @@ batch_size_train   = params['batch_size_train']
 batch_size_test    = params['batch_size_test']   
 add_Fatom          = params['add_Fatom']
 add_Katom          = params['add_Katom']
+add_3P             = params['add_3P']
 hidden_channels    = params['hidden_channels']
 nRuns              = params['Number_of_RUNS']
 nepoch             = params['Epochs']
 
-edge_dimen,input_features = sizeofmodel (add_Fatom,add_Katom,interaction_colors)
+edge_dimen,input_features = sizeofmodel (add_Fatom,add_Katom,interaction_colors,add_3P)
     
 
 results = {'run': [], 'epoch': [], 'loss': [], 'MAE': []}
@@ -66,11 +67,11 @@ for ii in range(1,nRuns+1):
 
     #os.system("python3.10 create_graph_dataset.py %s %s %s %s"%(ii,add_Fatom,add_Katom,interaction_colors)) 
     
-    create_graph(ii,add_Fatom,add_Katom,interaction_colors)
+    create_graph(ii,add_Fatom,add_Katom,add_3P,interaction_colors)
     
-    train_dataset = torch.load("data/train_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii), weights_only=False)
+    train_dataset = torch.load("data/train_gpu_ic%s_F%s_K%s_%s_3P%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii,add_3P), weights_only=False)
     min, max = train_dataset.normalise()
-    test_dataset = torch.load("data/test_gpu_ic%s_F%s_K%s_%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii), weights_only=False)
+    test_dataset = torch.load("data/test_gpu_ic%s_F%s_K%s_%s_3P%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii,add_3P), weights_only=False)
     test_dataset.normalise(min, max)
     
     train_loader = DataLoader(train_dataset, batch_size=batch_size_train, shuffle=True)
@@ -91,13 +92,13 @@ for ii in range(1,nRuns+1):
         results['run'].append(ii)
         results['epoch'].append(epoch)
         t1 = time.time()
-        loss_data = train(model, train_loader,device,criterion,optimizer, minX, maxX,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        loss_data = train(model, train_loader,device,criterion,optimizer, minX, maxX,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom,add_3P=add_3P).to(device)
         results['loss'].append(loss_data.detach().cpu().numpy().item())
         tt = round((time.time()-t1)*1000)
         ttt += tt
         t1 = time.time()
-        train_acc = test(model, train_loader,device,criterion,optimizer, minX, maxX, show=False, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
-        test_acc = test(model, test_loader,device,criterion, optimizer, minX, maxX, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom).to(device)
+        train_acc = test(model, train_loader,device,criterion,optimizer, minX, maxX, show=False, clear=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom,add_3P=add_3P).to(device)
+        test_acc = test(model, test_loader,device,criterion, optimizer, minX, maxX, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom,add_3P=add_3P).to(device)
         results['MAE'].append(test_acc.detach().cpu().numpy().item())
         te = round((time.time()-t1)*1000)
         tte += te
@@ -105,13 +106,13 @@ for ii in range(1,nRuns+1):
             best_test = test_acc
             best_model = copy.deepcopy(model)
             best_epoch = epoch
-            torch.save(best_model,'data/best_model_%s_ic%s_F%s_K%s.pt'%(ii,interaction_colors,add_Fatom,add_Katom))
+            torch.save(best_model,'data/best_model_%s_ic%s_F%s_K%s_3P%s.pt'%(ii,interaction_colors,add_Fatom,add_Katom,add_3P))
         print(f'Epoch: {epoch:03d} ({tt:04d}/{te:04d}), Train MAE: {train_acc:.4f}, Test MAE: {test_acc:.4f} (best: {best_test:.4f})')
     
     print("Best MAE on test", best_test,"at",best_epoch)
     print(f"Total time {round(ttt/1000):04d}s for training, {round(tte/1000):04d}s for testing")
     print(f"Average time per epoch {round(ttt/nepoch):04d}ms for training, {round(tte/nepoch):04d}ms for testing")
-    test(best_model, test_loader,device,criterion,optimizer, minX, maxX, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom)
+    test(best_model, test_loader,device,criterion,optimizer, minX, maxX, show=False,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom,add_3P=add_3P)
     
     del model
     torch.cuda.empty_cache()
@@ -119,7 +120,7 @@ for ii in range(1,nRuns+1):
     #plt.show()
 
 df_final = pd.DataFrame(results)
-df_final.to_csv('data_res_ic%s_F%s_K%s.csv'%(interaction_colors,add_Fatom,add_Katom), index=False)
+df_final.to_csv('data_res_ic%s_F%s_K%s_3P%s.csv'%(interaction_colors,add_Fatom,add_Katom,add_3P), index=False)
 #fig, ax = plt.subplots(figsize=(10,4))
 
 # =============================================================================

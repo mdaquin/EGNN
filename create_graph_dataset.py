@@ -264,6 +264,10 @@ def graph_from_line_vec(l,default_color='black',add_Katom = False, add_Fatom = F
             colors.append("lightgrey")
         G.add_node(f"{ng}_K", colR=0, colG=0, colB=0,  atom=19, metal=0, fluoride=0, potassium=1) 
         colors.append("lightgrey")
+        for i in range(1,9):
+              G.add_edge(f"{ng}_M{i}", f"{ng}_K",
+                 dx=0, dy=0, dz=0,
+                 distance=np.round(distMK(i, kx, ky, kz, l["a"], l["b"], l["c"]),3),colIR=0, colIGreen=0, colIB=0, colIG=0, interaction_color=default_color)
         add_fluorine_metal_connection(G,l,ng)
         add_fluorine_potasium_connection(G,l,ng)
             

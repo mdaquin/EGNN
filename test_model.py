@@ -111,7 +111,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
 #with open("input_config_TTT.json") as f:
-with open("input_config_FTT.json") as f:
+with open("input_config_TTT.json") as f:
    params = json.load(f)
 
 

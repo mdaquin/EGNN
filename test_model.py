@@ -111,7 +111,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
 #with open("input_config_TTT.json") as f:
-with open("input_config_TTT.json") as f:
+with open("input_config_TTT_3PT.json") as f:
    params = json.load(f)
 
 
@@ -136,7 +136,10 @@ nepoch             = params['Epochs']
 # nRuns     = 10    
 # =============================================================================
 
-df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+#df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+df = pd.read_csv('data/all_new_data_corrected.csv')
+
+
 minX = df["dE scaled"].min()
 maxX = df["dE scaled"].max()
 
@@ -174,14 +177,19 @@ for ii in range (1,nRuns+1):
 df_final = pd.DataFrame(results)
 
 fig, ax = plt.subplots(figsize=(10,4))
+
 df = pd.read_csv('data_res_ic%s_F%s_K%s_3P%s.csv'%(interaction_colors,add_Fatom,add_Katom,add_3P))
+
 for key, grp in df.groupby('run'):
      ax.plot(grp['epoch'], grp['MAE'], label=key)
-ax.text(450, 500, r'MAE(full set)=%0.2f$\pm$(%0.2f)'%(df_final.full_mae.mean(), df_final.full_mae.std(ddof=1)), fontsize=15)
-ax.text(450, 600, r'MAE(test set)=%0.2f$\pm$(%0.2f)'%(df_final.test_mae.mean(),df_final.test_mae.std(ddof=1)), fontsize=15)
+
+ax.text(450, 100, r'MAE(full set)=%0.2f$\pm$(%0.2f)'%(df_final.full_mae.mean(), df_final.full_mae.std(ddof=1)), fontsize=15)
+ax.text(450, 150, r'MAE(test set)=%0.2f$\pm$(%0.2f)'%(df_final.test_mae.mean(),df_final.test_mae.std(ddof=1)), fontsize=15)
+
 plt.xlabel('Epoch')
 plt.ylabel(f'MAE ($\mu$$E_h$, range: 0 - {int(abs(minX)+abs(maxX))}])')
 ax.legend()
-#plt.savefig("ic%s_F%s_K%s_mae_3par.pdf"%(interaction_colors,add_Fatom,add_Katom))
+plt.title("ic%s_F%s_K%s_3P%s"%(interaction_colors,add_Fatom,add_Katom,add_3P))
+plt.savefig("ic%s_F%s_K%s_3P%s_mae.png"%(interaction_colors,add_Fatom,add_Katom,add_3P))
 plt.show()
 # ===============================================

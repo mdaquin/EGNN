@@ -11,10 +11,32 @@ import json,sys
 from create_graph_dataset import create_graph
 
 
-if len(sys.argv) != 2:
-   print("please provide a config file")
-   sys.exit(-1)
+def create_dataset (): 
+    scaling_factor =  {'sc':1,'ti':1.498, 'fe':2.187, 'co':3.075 } 
 
+    compound_name = 'sc' 
+    df_1 = pd.read_csv("../GEGNN/data/table_ia_%s_b3.csv"%(compound_name)).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)     
+    compound_name = 'ti' 
+    df_2 = pd.read_csv("../GEGNN/data/table_ia_%s_b3.csv"%(compound_name)).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)   
+    compound_name = 'fe' 
+    df_3 = pd.read_csv("../GEGNN/data/table_ia_%s_b3.csv"%(compound_name)).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)  
+    compound_name = 'co' 
+    df_4 = pd.read_csv("../GEGNN/data/table_ia_%s_b3.csv"%(compound_name)).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+
+    mask = 1000 
+    
+    df = pd.concat([df_4[:mask], df_2[:mask],df_3[:mask],df_1[:mask]], sort=False, ignore_index=True)
+    df.to_csv('data/all_data.csv')
+    
+    return df 
+
+
+# =============================================================================
+# if len(sys.argv) != 2:
+#    print("please provide a config file")
+#    sys.exit(-1)
+# 
+# =============================================================================
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
 gc.collect()
@@ -38,6 +60,8 @@ print("RUNNIN ON", device)
 with open(sys.argv[1]) as f:
    params = json.load(f)
 
+#with open("input_config_FFF.json") as f:
+#   params = json.load(f)
 
 interaction_colors = params['interaction_colors']   
 learning_rate      = params['learning_rate']
@@ -50,12 +74,21 @@ hidden_channels    = params['hidden_channels']
 nRuns              = params['Number_of_RUNS']
 nepoch             = params['Epochs']
 
+# =============================================================================
+# nRuns = 1 
+# add_3P = False
+# add_Fatom = False
+# add_Katom = False 
+# interaction_colors=False
+# =============================================================================
+
+
 edge_dimen,input_features = sizeofmodel (add_Fatom,add_Katom,interaction_colors,add_3P)
-    
-
 results = {'run': [], 'epoch': [], 'loss': [], 'MAE': []}
+#df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+df = pd.read_csv('data/all_new_data_corrected.csv')
 
-df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+
 minX = df["dE scaled"].min()
 maxX = df["dE scaled"].max()
 
@@ -106,6 +139,7 @@ for ii in range(1,nRuns+1):
             best_test = test_acc
             best_model = copy.deepcopy(model)
             best_epoch = epoch
+            torch.save(best_model.state_dict(), 'data/state_best_model_%s_ic%s_F%s_K%s_3P%s.pt' % (ii, interaction_colors, add_Fatom, add_Katom, add_3P))
             torch.save(best_model,'data/best_model_%s_ic%s_F%s_K%s_3P%s.pt'%(ii,interaction_colors,add_Fatom,add_Katom,add_3P))
         print(f'Epoch: {epoch:03d} ({tt:04d}/{te:04d}), Train MAE: {train_acc:.4f}, Test MAE: {test_acc:.4f} (best: {best_test:.4f})')
     

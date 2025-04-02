@@ -404,9 +404,12 @@ def create_graph(nRand,add_Fatom,add_Katom,add_3P,dtest):
     print("random_state = %s"%(nRand))
     print("Fatom=%s"%(add_Fatom))
     print("Katom=%s"%(add_Katom))
-    
     print("*"*6,"loading Data", "*"*6)
-    df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+    #df = pd.read_excel("data/data_ia_solol_kmf3.xlsx", skiprows=9, index_col=0).drop(["Nb V", "Nb B", "Nb R", "Label"], axis=1)
+    df = pd.read_csv('data/all_new_data_corrected.csv')
+    
+    
+    
     print("*"*6,"converting to graphs", "*"*6) 
     df["dE scaled"] = ((df["dE scaled"] - df["dE scaled"].min()) / (df["dE scaled"].max()-df["dE scaled"].min()))
        

@@ -11,7 +11,7 @@ torch.cuda.empty_cache()
 
 
 def denormalize(value, key, min_dict, max_dict):
-    return value * (max_dict - min_dict) + min_dict
+    return value * (max_dict - min_dict+1e-27) + min_dict
     #return value * (max_dict[key] - min_dict[key] + 1e-8) + min_dict[key]
 
     

@@ -111,7 +111,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("RUNNIN ON", device)
 
 #with open("input_config_TTT.json") as f:
-with open("input_config_TTT_3PT.json") as f:
+with open("input_config_TFF_3PF.json") as f:
    params = json.load(f)
 
 
@@ -144,7 +144,7 @@ minX = df["dE scaled"].min()
 maxX = df["dE scaled"].max()
 
 
-results = {'run': [], 'full_mae': [], 'test_mae': [], 'Ecp_f':[], 'Ecr_f':[], 'Ecp_t':[],'Ecr_t':[]}
+results = {'run': [], 'full_mae': [], 'test_mae': [], 'Energy_predicted_fullSet':[], 'Energy_target_fullSet':[], 'Energy_predicted_testSet':[],'Energy_target_testSet':[]}
 
 
 for ii in range (1,nRuns+1):
@@ -161,8 +161,8 @@ for ii in range (1,nRuns+1):
     full_loader = DataLoader(full_dataset, batch_size=batch_size_test, shuffle=False)
     err_full,real_dn,out_dn= test(best_model, full_loader,device,criterion,optimizer, minX, maxX, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom,add_3P=add_3P)
     results['full_mae'].append(err_full.cpu().numpy())
-    results['Ecr_f'].append(real_dn.cpu().numpy())
-    results['Ecp_f'].append(out_dn.detach().cpu().numpy())
+    results['Energy_target_fullSet'].append(real_dn.cpu().numpy())
+    results['Energy_predicted_fullSet'].append(out_dn.detach().cpu().numpy())
     
     
     test_dataset = torch.load("data/test_gpu_ic%s_F%s_K%s_%s_3P%s.pt"%(interaction_colors,add_Fatom,add_Katom,ii,add_3P), weights_only=False)
@@ -170,12 +170,13 @@ for ii in range (1,nRuns+1):
     test_loader = DataLoader(test_dataset, batch_size=batch_size_test, shuffle=False)
     err_test,real_dn,out_dn = test(best_model, test_loader,device,criterion,optimizer, minX, maxX, show=True,interaction_colors=interaction_colors, add_Fatom =add_Fatom, add_Katom = add_Katom,add_3P=add_3P)
     results['test_mae'].append(err_test.cpu().numpy())
-    results['Ecr_t'].append(real_dn.cpu().numpy())
-    results['Ecp_t'].append(out_dn.detach().cpu().numpy())
+    results['Energy_target_testSet'].append(real_dn.cpu().numpy())
+    results['Energy_predicted_testSet'].append(out_dn.detach().cpu().numpy())
 
 
 df_final = pd.DataFrame(results)
-
+df_final.to_csv('data_Energy_ic%s_F%s_K%s_3P%s.csv'%(interaction_colors,add_Fatom,add_Katom,add_3P))
+'''
 fig, ax = plt.subplots(figsize=(10,4))
 
 df = pd.read_csv('data_res_ic%s_F%s_K%s_3P%s.csv'%(interaction_colors,add_Fatom,add_Katom,add_3P))
@@ -192,4 +193,5 @@ ax.legend()
 plt.title("ic%s_F%s_K%s_3P%s"%(interaction_colors,add_Fatom,add_Katom,add_3P))
 plt.savefig("ic%s_F%s_K%s_3P%s_mae.png"%(interaction_colors,add_Fatom,add_Katom,add_3P))
 plt.show()
+''' 
 # ===============================================
